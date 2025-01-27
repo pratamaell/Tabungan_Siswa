@@ -98,7 +98,6 @@
         </div>
         <div class="nav-links">
             <a href="dashboard_siswa.php"><i class="fas fa-home"></i> Beranda</a>
-            <a href="tabungan_siswa.php"><i class="fas fa-piggy-bank"></i> Tabungan</a>
             <a href="penarikan_siswa.php"><i class="fas fa-hand-holding-usd"></i> Penarikan</a>
             <a href="riwayat_siswa.php"><i class="fas fa-history"></i> Riwayat</a>
             <a href="profil_siswa.php"><i class="fas fa-user"></i> Profil</a>

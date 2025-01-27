@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         select, input[type="text"], input[type="number"], input[type="datetime-local"], textarea {
-            width: 100%;
+            width: 90%;
             padding: 12px;
             margin-bottom: 15px;
             border: 1px solid #ddd;
@@ -159,11 +159,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <div class="content-wrapper">
         <div class="container">
-            <h1>Customize Receipt</h1>
+            <h1>INPUT PENYETORAN</h1>
 
             <!-- Pilih Siswa -->
             <div>
-                <label for="siswa_id">Select Student:</label>
+                <label for="siswa_id">SISWA:</label>
                 <select name="siswa_id" required>
                     <?php if (!empty($result_siswa)): ?>
                         <?php foreach ($result_siswa as $row): ?>
@@ -184,25 +184,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             <!-- Tanggal -->
             <div>
-                <label for="date">Date:</label>
+                <label for="date">TANGGAL:</label>
                 <input type="datetime-local" name="tanggal" required>
             </div>
 
             <!-- Harga Item -->
             <div>
-                <label for="item_price">Item Price:</label>
+                <label for="item_price">NOMINAL:</label>
                 <input type="number" name="nominal" required>
             </div>
 
             <!-- Deskripsi Item -->
             <div>
-                <label for="item_description">Item Description:</label>
+                <label for="item_description">DESKRIPSI:</label>
                 <textarea name="keterangan" required></textarea>
             </div>
 
             <!-- Tombol Submit -->
             <div class="button-container">
-                <button type="submit">Preview Receipt</button>
+                <button type="submit">STRUK</button>
             </div>
         </div>
     </div>
