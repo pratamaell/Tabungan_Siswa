@@ -20,11 +20,11 @@ if ($user && password_verify($password, $user['password'])) {
     $_SESSION['role'] = $user['role'];
 
     if ($user['role'] == 'admin') {
-        header("Location: admin_dashboard.php");
+        header("Location: dashboard_admin.php");
     } elseif ($user['role'] == 'bendahara') {
-        header("Location: bendahara_dashboard.php");
+        header("Location: dashboard_bendahara.php");
     } else {
-        header("Location: siswa_dashboard.php");
+        header("Location: dashboard_siswa.php");
     }
 } else {
     echo "Login gagal! Email atau password salah.";
