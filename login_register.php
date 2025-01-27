@@ -85,12 +85,19 @@
         <div class="form-box">
             <h2 id="form-title">Login</h2>
             <form id="auth-form" action="auth_process.php" method="POST">
-                <!-- Common Inputs -->
-                <label for="email">Email</label>
-                <input type="email" name="email" id="email" placeholder="Enter your email" required>
+                <!-- Name Input for Register -->
+                <div id="name-section" style="display: none;">
+                    <label for="name">Nama Lengkap</label>
+                    <input type="text" name="name" id="name" placeholder="Masukkan nama lengkap">
+                </div>
 
+                <!-- Email Input -->
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" placeholder="Masukkan email Anda" required>
+
+                <!-- Password Input -->
                 <label for="password">Password</label>
-                <input type="password" name="password" id="password" placeholder="Enter your password" required>
+                <input type="password" name="password" id="password" placeholder="Masukkan password Anda" required>
 
                 <!-- Role Selection for Register -->
                 <div id="role-section" style="display: none;">
@@ -117,6 +124,7 @@
         // Toggle between Login and Register
         const formTitle = document.getElementById('form-title');
         const authForm = document.getElementById('auth-form');
+        const nameSection = document.getElementById('name-section');
         const roleSection = document.getElementById('role-section');
         const submitButton = document.getElementById('submit-button');
         const toggleLink = document.getElementById('toggle-link');
@@ -127,12 +135,14 @@
             if (formTitle.textContent === 'Login') {
                 formTitle.textContent = 'Register';
                 submitButton.textContent = 'Register';
+                nameSection.style.display = 'block';
                 roleSection.style.display = 'block';
                 toggleLink.textContent = 'Sudah punya akun? Login';
                 authForm.action = 'register_process.php';
             } else {
                 formTitle.textContent = 'Login';
                 submitButton.textContent = 'Login';
+                nameSection.style.display = 'none';
                 roleSection.style.display = 'none';
                 toggleLink.textContent = 'Belum punya akun? Daftar';
                 authForm.action = 'auth_process.php';
