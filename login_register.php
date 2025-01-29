@@ -9,55 +9,65 @@
         body {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             color: #fff;
         }
         .container {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            width: 100%;
         }
         .form-box {
-            background: #2d3436;
-            padding: 30px 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             width: 100%;
             max-width: 400px;
+            text-align: center;
+        }
+        .form-box img {
+            width: 150px;
         }
         .form-box h2 {
-            text-align: center;
             margin-bottom: 20px;
-            font-size: 24px;
-            color: #dfe6e9;
+            font-size: 26px;
+            color: #fff;
         }
         .form-box label {
             display: block;
-            margin-bottom: 8px;
+            text-align: left;
             font-weight: bold;
-            color: #b2bec3;
+            margin-bottom: 6px;
+            color: #dfe6e9;
         }
-        .form-box input[type="text"],
-        .form-box input[type="email"],
-        .form-box input[type="password"],
-        .form-box select {
+        .form-box input, .form-box select {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
+            padding: 12px;
+            margin-bottom: 15px;
             border: none;
-            border-radius: 5px;
-            background: #dfe6e9;
-            color: #2d3436;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
             font-size: 16px;
+            outline: none;
+        }
+        .form-box input::placeholder {
+            color: #dfe6e9;
         }
         .form-box button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background: #0984e3;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
             color: #fff;
             cursor: pointer;
@@ -66,16 +76,15 @@
         .form-box button:hover {
             background: #74b9ff;
         }
-        .form-box .toggle-link {
-            text-align: center;
-            margin-top: 10px;
+        .toggle-link {
+            margin-top: 15px;
         }
-        .form-box .toggle-link a {
+        .toggle-link a {
             color: #74b9ff;
             text-decoration: none;
             font-weight: bold;
         }
-        .form-box .toggle-link a:hover {
+        .toggle-link a:hover {
             text-decoration: underline;
         }
     </style>
@@ -83,23 +92,17 @@
 <body>
     <div class="container">
         <div class="form-box">
+            <img src="ikon.png" alt="Logo Tabungan Siswa">
             <h2 id="form-title">Login</h2>
             <form id="auth-form" action="auth_process.php" method="POST">
-                <!-- Name Input for Register -->
                 <div id="name-section" style="display: none;">
                     <label for="name">Nama Lengkap</label>
                     <input type="text" name="name" id="name" placeholder="Masukkan nama lengkap">
                 </div>
-
-                <!-- Email Input -->
                 <label for="email">Email</label>
                 <input type="email" name="email" id="email" placeholder="Masukkan email Anda" required>
-
-                <!-- Password Input -->
                 <label for="password">Password</label>
                 <input type="password" name="password" id="password" placeholder="Masukkan password Anda" required>
-
-                <!-- Role Selection for Register -->
                 <div id="role-section" style="display: none;">
                     <label for="role">Role</label>
                     <select name="role" id="role" required>
@@ -108,20 +111,14 @@
                         <option value="admin">Admin</option>
                     </select>
                 </div>
-
-                <!-- Submit Button -->
                 <button type="submit" id="submit-button">Login</button>
-
-                <!-- Toggle Link -->
                 <div class="toggle-link">
                     <a href="#" id="toggle-link">Belum punya akun? Daftar</a>
                 </div>
             </form>
         </div>
     </div>
-
     <script>
-        // Toggle between Login and Register
         const formTitle = document.getElementById('form-title');
         const authForm = document.getElementById('auth-form');
         const nameSection = document.getElementById('name-section');
@@ -131,7 +128,6 @@
 
         toggleLink.addEventListener('click', (e) => {
             e.preventDefault();
-
             if (formTitle.textContent === 'Login') {
                 formTitle.textContent = 'Register';
                 submitButton.textContent = 'Register';

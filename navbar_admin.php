@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sidebar with Logo</title>
+    <title>Navbar Admin</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
         /* Base Styles */
@@ -34,16 +34,16 @@
         .logo {
             text-align: center;
             padding: 20px;
-            background: #00cec9;
+            background:rgb(85, 172, 171);
             color: #2d3436;
-            font-size: 22px;
+            font-size: 30px;
             font-weight: bold;
             transition: opacity 0.3s ease, padding 0.3s ease;
         }
 
         .logo img {
-            width: 50px;
-            height: 50px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
             margin-bottom: 10px;
             transition: width 0.3s ease, height 0.3s ease;
@@ -173,16 +173,15 @@
 <body>
     <div class="sidebar" id="sidebar">
         <div class="logo">
-            <img src="logo.png" alt="Logo">
+            <img src="ikon.png" alt="Logo">
         </div>
-        <h2 id="sidebar-title">Admin Panel</h2>
         <button class="toggle-btn" id="toggle-btn" onclick="toggleSidebar()">☰</button>
         <ul>
             <li><a href="dashboard_admin.php"><i class="icon fas fa-home"></i><span class="text">Home Admin</span></a></li>
             <li><a href="#"><i class="icon fas fa-user-graduate"></i><span class="text">Kelola Siswa</span></a></li>
             <li><a href="#"><i class="icon fas fa-chalkboard"></i><span class="text">Kelola Kelas</span></a></li>
             <li><a href="#"><i class="icon fas fa-money-bill-alt"></i><span class="text">Laporan Keuangan</span></a></li>
-            <li><a href="manajemen_akun_pengaturan.php"><i class="icon fas fa-cogs"></i><span class="text">Pengaturan</span></a></li>
+            <li><a href="manajemen_akun_pengaturan.php"><i class="icon fas fa-cogs"></i><span class="text">Akun</span></a></li>
             <li><a href="logout.php"><i class=" icon fas fa-sign-out-alt"></i><span class="text">Logout</span></a></li>
         </ul>
     </div>
