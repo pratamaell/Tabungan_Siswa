@@ -47,6 +47,31 @@ if ($siswa) {
     $transaksi = [];
 }
 
+// Ambil data setoran terakhir
+$query_setoran_terakhir = "
+    SELECT nominal, tanggal 
+    FROM transaksi 
+    WHERE siswa_id = :siswa_id AND jenis = 'setoran' 
+    ORDER BY tanggal DESC 
+    LIMIT 1";
+$stmt_setoran_terakhir = $db->prepare($query_setoran_terakhir);
+$stmt_setoran_terakhir->bindParam(':siswa_id', $siswa_id);
+$stmt_setoran_terakhir->execute();
+$setoran_terakhir = $stmt_setoran_terakhir->fetch(PDO::FETCH_ASSOC);
+
+// Ambil data penarikan terakhir
+$query_penarikan_terakhir = "
+    SELECT nominal, tanggal 
+    FROM penarikan 
+    WHERE siswa_id = :siswa_id 
+    ORDER BY tanggal DESC 
+    LIMIT 1";
+$stmt_penarikan_terakhir = $db->prepare($query_penarikan_terakhir);
+$stmt_penarikan_terakhir->bindParam(':siswa_id', $siswa_id);
+$stmt_penarikan_terakhir->execute();
+$penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
+
+
 ?>
 
 <!DOCTYPE html>
@@ -145,15 +170,34 @@ if ($siswa) {
 </head>
 <body>
     <div class="main-content">
-        <div class="header">Siswa Dashboard</div>
+        <div class="header">
+        <h3>Selamat Datang, <?php echo $user['name']; ?>!</h3>
+        <p>Berikut adalah informasi tabungan Anda:</p>
+        </div>
         <div class="cards">
             <div class="card">
-                <h3>Selamat Datang, <?php echo $user['name']; ?>!</h3>
-                <p>Berikut adalah informasi tabungan Anda:</p>
+                <h3>Setoran Terakhir</h3>
+                <?php if ($setoran_terakhir): ?>
+                    <p><b>Rp <?php echo number_format($setoran_terakhir['nominal'], 0, ',', '.'); ?></b></p>
+                    <p><?php echo date('d M Y', strtotime($setoran_terakhir['tanggal'])); ?></p>
+                <?php else: ?>
+                    <p>Belum ada setoran.</p>
+                <?php endif; ?>
             </div>
             <div class="card">
-                <h3>Total Saldo</h3>
-                <p>Rp <?php echo number_format($saldo['total_saldo'], 0, ',', '.'); ?></p>
+                <h3>Penarikan Terakhir</h3>
+                <?php if ($penarikan_terakhir): ?>
+                    <p><b>Rp <?php echo number_format($penarikan_terakhir['nominal'], 0, ',', '.'); ?></b></p>
+                    <p><?php echo date('d M Y', strtotime($penarikan_terakhir['tanggal'])); ?></p>
+                <?php else: ?>
+                    <p>Belum ada penarikan.</p>
+                <?php endif; ?>
+            </div>
+            <div class="card">
+                <center>
+                <h2>Total Saldo</h3>
+                <h4>Rp <?php echo number_format($saldo['total_saldo'], 0, ',', '.'); ?></h4>
+                </center>
             </div>
             <div class="card riwayat">
                 <h3>Riwayat Transaksi</h3>

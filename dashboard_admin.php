@@ -28,13 +28,26 @@ $query_saldo = "SELECT SUM(nominal) as total_saldo FROM transaksi";
 $stmt_saldo = $db->prepare($query_saldo);
 $stmt_saldo->execute();
 $total_saldo = $stmt_saldo->fetch(PDO::FETCH_ASSOC);
+
+
+// Ambil data tabungan per bulan
+$query_tabungan_per_bulan = "
+    SELECT DATE_FORMAT(tanggal, '%Y-%m') AS bulan, SUM(nominal) AS total_tabungan 
+    FROM transaksi 
+    GROUP BY DATE_FORMAT(tanggal, '%Y-%m')
+    ORDER BY DATE_FORMAT(tanggal, '%Y-%m')";
+$stmt_tabungan_per_bulan = $db->prepare($query_tabungan_per_bulan);
+$stmt_tabungan_per_bulan->execute();
+$tabungan_per_bulan = $stmt_tabungan_per_bulan->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Admin Dashboard</title>
     <style>
         body {
@@ -96,6 +109,14 @@ $total_saldo = $stmt_saldo->fetch(PDO::FETCH_ASSOC);
             font-size: 18px;
             color: #74b9ff;
         }
+
+        .chart-container {
+            margin-top: 20px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
         @media (max-width: 768px) {
             .main-content {
                 margin-left: 0;
@@ -128,6 +149,52 @@ $total_saldo = $stmt_saldo->fetch(PDO::FETCH_ASSOC);
             <h3>Informasi Tambahan</h3>
             <p>Pastikan semua data siswa dan kelas telah diperbarui.</p>
         </div>
+        <div class="chart-container">
+            <canvas id="tabunganChart"></canvas>
+        </div>
     </div>
+    <script>
+        // Data untuk grafik
+        const labels = <?php echo json_encode(array_column($tabungan_per_bulan, 'bulan')); ?>;
+        const data = {
+            labels: labels,
+            datasets: [{
+                label: 'Total Tabungan',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                data: <?php echo json_encode(array_column($tabungan_per_bulan, 'total_tabungan')); ?>,
+                fill: false,
+            }]
+        };
+
+        // Konfigurasi untuk grafik
+        const config = {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Bulan'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Total Tabungan (Rp)'
+                        }
+                    }
+                }
+            }
+        };
+
+        // Inisialisasi grafik
+        const tabunganChart = new Chart(
+            document.getElementById('tabunganChart'),
+            config
+        );
+    </script>
 </body>
 </html>

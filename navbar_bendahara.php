@@ -133,7 +133,7 @@
 <body>
     <div class="navbar">
         <div class="logo">
-            <img src="logo.png" alt="Logo">
+            <img src="ikon.png" alt="Logo">
             <span>Tabungan Siswa</span>
         </div>
         <div class="menu-toggle"><i class="fas fa-bars"></i></div>

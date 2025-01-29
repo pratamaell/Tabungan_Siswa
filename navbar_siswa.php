@@ -93,7 +93,7 @@
     <!-- Navbar -->
     <div class="navbar">
         <div class="logo">
-            <img src="logo.png" alt="Logo Sekolah">
+            <img src="ikon.png" alt="Logo Sekolah">
             <h1>Halaman Siswa</h1>
         </div>
         <div class="nav-links">
