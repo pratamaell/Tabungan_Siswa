@@ -25,9 +25,6 @@ $query_profil = "
 $stmt_profil = $conn->prepare($query_profil);
 $stmt_profil->execute(['user_id' => $user_id]);
 $profil = $stmt_profil->fetch(PDO::FETCH_ASSOC);
-
-// Cek apakah tombol edit ditekan
-$is_edit = isset($_GET['edit']);
 ?>
 
 <!DOCTYPE html>
@@ -36,157 +33,129 @@ $is_edit = isset($_GET['edit']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Siswa</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg,rgb(175, 173, 189),rgb(65, 60, 123));
+            color: #fff;
+            padding-top: 80px; /* Offset for the fixed navbar */
         }
 
         .container {
-            width: 90%;
-            max-width: 600px;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
         }
 
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 28px;
-        }
-
-        .profile-info p {
-            font-size: 18px;
-            margin: 10px 0;
-            color: #555;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            margin: 10px 5px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .btn-edit {
-            background-color: #28a745;
-            color: #fff;
-        }
-
-        .btn-edit:hover {
-            background-color: #218838;
-        }
-
-        .btn-back {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        .btn-back:hover {
-            background-color: #0056b3;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
+        .header {
+            background: #fdcb6e;
+            padding: 20px;
+            border-radius: 10px;
+            color: #2d3436;
+            font-size: 24px;
             font-weight: bold;
-            color: #333;
-        }
-
-        .form-group input, .form-group select {
+            margin-bottom: 20px;
+            margin-left:380px;
             width: 100%;
+            max-width: 700px;
+        }
+
+        .profile-container {
+            background:rgb(64, 55, 135);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            color: #333;
+            margin-left:380px;
+        }
+
+        .profile-container h3 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            color:rgb(232, 231, 241);
+        }
+
+        .profile-container .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .profile-container .profile-info div {
+            display: flex;
+            justify-content: space-between;
             padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            background-color: #f9f9f9;
+            background: #f1f1f1;
+            border-radius: 5px;
         }
 
-        .form-group input:focus, .form-group select:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
+        .profile-container .profile-info div span {
+            font-weight: bold;
         }
 
-        .btn-submit {
-            background-color: #007bff;
+        .profile-container .profile-info div p {
+            margin: 0;
+        }
+
+        .profile-container .edit-button {
+            margin-top: 20px;
+            padding: 10px;
+            background: #6c5ce7;
             color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
         }
 
-        .btn-submit:hover {
-            background-color: #0056b3;
+        .profile-container .edit-button:hover {
+            background: #a29bfe;
+        }
+
+        @media (max-width: 768px) {
+            .home-section {
+                left: 0;
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Profil Siswa</h1>
-
-        <?php if ($is_edit): ?>
-            <!-- Tampilkan form edit jika user menekan tombol edit -->
-            <form method="POST" action="profil_siswa.php">
-                <div class="form-group">
-                    <label for="nama">Nama Lengkap</label>
-                    <input type="text" id="nama" name="nama" value="<?= htmlspecialchars($profil['nama_siswa']); ?>" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="<?= htmlspecialchars($profil['email_siswa']); ?>" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="kelas_id">Kelas</label>
-                    <select id="kelas_id" name="kelas_id" required>
-                        <?php
-                        // Ambil daftar kelas untuk dropdown
-                        $query_kelas = "SELECT id, nama_kelas FROM kelas";
-                        $stmt_kelas = $conn->prepare($query_kelas);
-                        $stmt_kelas->execute();
-                        $kelas = $stmt_kelas->fetchAll(PDO::FETCH_ASSOC);
-
-                        foreach ($kelas as $k):
-                        ?>
-                            <option value="<?= $k['id']; ?>" <?= $k['id'] == $profil['kelas_id'] ? 'selected' : ''; ?>>
-                                <?= htmlspecialchars($k['nama_kelas']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-submit">Simpan Perubahan</button>
-            </form>
-        <?php else: ?>
-            <!-- Tampilkan informasi profil jika tidak dalam mode edit -->
-            <div class="profile-info">
-                <p><strong>Nama:</strong> <?= htmlspecialchars($profil['nama_siswa']); ?></p>
-                <p><strong>Email:</strong> <?= htmlspecialchars($profil['email_siswa']); ?></p>
-                <p><strong>Kelas:</strong> <?= htmlspecialchars($profil['nama_kelas']); ?></p>
-
-                <!-- Tombol Edit Profil -->
-                <a href="profil_siswa.php?edit=true"><button class="btn btn-edit">Edit Profil</button></a>
+    <div class="home-section">
+        <div class="main-content">
+            <div class="header">
+                <h3>Profil Siswa</h3>
             </div>
-        <?php endif; ?>
-
-        <a href="dashboard_siswa.php"><button class="btn btn-back">Kembali ke Dashboard</button></a>
+            <div class="profile-container">
+                <h3>Informasi Profil</h3>
+                <div class="profile-info">
+                    <div>
+                        <span>Nama:</span>
+                        <p><?php echo htmlspecialchars($profil['nama_siswa']); ?></p>
+                    </div>
+                    <div>
+                        <span>Email:</span>
+                        <p><?php echo htmlspecialchars($profil['email_siswa']); ?></p>
+                    </div>
+                    <div>
+                        <span>Kelas:</span>
+                        <p><?php echo htmlspecialchars($profil['nama_kelas']); ?></p>
+                    </div>
+                </div>
+                <button class="edit-button">Edit Profil</button>
+            </div>
+        </div>
     </div>
 </body>
 </html>

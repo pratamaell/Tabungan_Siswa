@@ -69,31 +69,28 @@ if (isset($_POST['submit'])) {
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            background: linear-gradient(135deg,rgb(175, 173, 189),rgb(65, 60, 123));
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            position: relative; /* Pastikan posisi sidebar tidak mempengaruhi layout */
         }
 
         .container {
             width: 100%;
             max-width: 500px;
             padding: 30px;
-            background: #2c3e50;
+            background:rgb(64, 55, 135);
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             color: white;
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%); /* Memastikan container berada tepat di tengah halaman */
+            text-align: center;
+            margin-left: 350px;
         }
 
         h1 {
-            text-align: center;
             color: #fff;
             margin-bottom: 20px;
         }
@@ -102,17 +99,19 @@ if (isset($_POST['submit'])) {
             font-size: 18px;
             color: #fff;
             margin-bottom: 20px;
-            text-align: center;
             font-weight: bold;
         }
 
         form {
             display: flex;
             flex-direction: column;
+            align-items: center;
         }
 
         input[type="number"] {
             padding: 10px;
+            width: 100%;
+            max-width: 300px;
             margin-bottom: 15px;
             font-size: 16px;
             border-radius: 5px;
@@ -126,6 +125,8 @@ if (isset($_POST['submit'])) {
 
         button {
             padding: 10px;
+            width: 100%;
+            max-width: 300px;
             background-color: #3498db;
             color: white;
             border: none;

@@ -30,44 +30,23 @@ if (isset($_POST['action'])) {
         $stmt_penarikan->execute();
         $penarikan = $stmt_penarikan->fetch(PDO::FETCH_ASSOC);
 
-        $siswa_id = $penarikan['siswa_id'];
-        $nominal = $penarikan['nominal'];
-
-        // Periksa apakah saldo siswa mencukupi
-        $query_saldo = "SELECT saldo FROM siswa WHERE id = :siswa_id";
-        $stmt_saldo = $conn->prepare($query_saldo);
-        $stmt_saldo->bindParam(':siswa_id', $siswa_id);
-        $stmt_saldo->execute();
-        $siswa = $stmt_saldo->fetch(PDO::FETCH_ASSOC);
-
-        if ($siswa['saldo'] >= $nominal) {
-            // Update saldo siswa
-            $new_saldo = $siswa['saldo'] - $nominal;
-            $query_update_saldo = "UPDATE siswa SET saldo = :new_saldo WHERE id = :siswa_id";
-            $stmt_update_saldo = $conn->prepare($query_update_saldo);
-            $stmt_update_saldo->bindParam(':new_saldo', $new_saldo);
-            $stmt_update_saldo->bindParam(':siswa_id', $siswa_id);
-            $stmt_update_saldo->execute();
-
-            // Update status penarikan menjadi 'approved'
-            $query_update_status = "UPDATE penarikan SET status = 'approved' WHERE id = :penarikan_id";
-            $stmt_update_status = $conn->prepare($query_update_status);
-            $stmt_update_status->bindParam(':penarikan_id', $penarikan_id);
-            $stmt_update_status->execute();
-
-            echo "<script>alert('Penarikan berhasil diproses');</script>";
-        } else {
-            echo "<script>alert('Saldo siswa tidak mencukupi untuk penarikan ini');</script>";
-        }
-    } else if ($status == 'rejected') {
-        // Update status penarikan menjadi 'rejected'
-        $query_update_status = "UPDATE penarikan SET status = 'rejected' WHERE id = :penarikan_id";
-        $stmt_update_status = $conn->prepare($query_update_status);
-        $stmt_update_status->bindParam(':penarikan_id', $penarikan_id);
-        $stmt_update_status->execute();
-
-        echo "<script>alert('Penarikan ditolak');</script>";
+        // Update saldo siswa
+        $query_update_saldo = "UPDATE siswa SET saldo = saldo - :nominal WHERE id = :siswa_id";
+        $stmt_update_saldo = $conn->prepare($query_update_saldo);
+        $stmt_update_saldo->bindParam(':nominal', $penarikan['nominal']);
+        $stmt_update_saldo->bindParam(':siswa_id', $penarikan['siswa_id']);
+        $stmt_update_saldo->execute();
     }
+
+    // Update status penarikan
+    $query_update_status = "UPDATE penarikan SET status = :status WHERE id = :penarikan_id";
+    $stmt_update_status = $conn->prepare($query_update_status);
+    $stmt_update_status->bindParam(':status', $status);
+    $stmt_update_status->bindParam(':penarikan_id', $penarikan_id);
+    $stmt_update_status->execute();
+
+    header("Location: penarikan_bendahara.php");
+    exit();
 }
 ?>
 
@@ -76,154 +55,165 @@ if (isset($_POST['action'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penarikan Tabungan Siswa</title>
+    <title>Penarikan Bendahara</title>
     <style>
+        /* General Styling */
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom, #dfefff, #dfefff);
             margin: 0;
             padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to bottom, #dfefff, #dfefff);
+            color: #2d3436;
+        }
+        .home-section {
+            position: relative;
+            background: #E4E9F7;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 20px auto;
-            margin-top: 100px;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            transition: all 0.5s ease;
+            z-index: 2;
             padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
-
-        h1 {
+        .sidebar.open ~ .home-section {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .header {
             text-align: center;
-            color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            color: #0984e3;
+        }
+        .header h2 {
+            color: #636e72;
+            margin-top: 10px;
+            font-size: 1.2em;
         }
 
+        /* Table Styling */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            font-size: 16px;
-            background-color: #f9f9f9;
+            background: #ffffff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
-            padding: 12px 16px;
+        table th, table td {
+            padding: 15px;
             text-align: left;
+            border: 1px solid #dfe6e9;
+            font-size: 1em;
+        }
+        table th {
+            background: #0984e3;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        table tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+        table tr:hover {
+            background: #dfe6e9;
         }
 
-        th {
-            background-color: #007bff;
-            color: white;
+        /* Button Styling */
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px 0;
+            background: #0984e3;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .btn:hover {
+            background: #74b9ff;
+            transform: scale(1.05);
+        }
+        .btn-approve {
+            background: #00b894;
+        }
+        .btn-approve:hover {
+            background: #55efc4;
+        }
+        .btn-reject {
+            background: #d63031;
+        }
+        .btn-reject:hover {
+            background: #ff7675;
         }
 
-        tbody tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        tbody tr:hover {
-            background-color: #e9ecef;
-        }
-
-        .action-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            margin: 0 4px;
-            transition: background-color 0.3s;
-        }
-
-        .approve-btn {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .approve-btn:hover {
-            background-color: #218838;
-        }
-
-        .reject-btn {
-            background-color: #dc3545;
-            color: white;
-        }
-
-        .reject-btn:hover {
-            background-color: #c82333;
-        }
-
-        .empty-message {
-            text-align: center;
-            color: #666;
-            font-size: 18px;
-            padding: 20px 0;
-        }
-
+        /* Responsive Styling */
         @media (max-width: 768px) {
-            th, td {
-                font-size: 14px;
-                padding: 8px 12px;
-            }
-
-            .action-btn {
-                font-size: 12px;
-                padding: 6px 12px;
+            .container {
+                padding: 10px;
             }
         }
     </style>
 </head>
 <body>
+    <div class="home-section">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <h1>Penarikan Bendahara</h1>
+                <h2>Daftar Penarikan yang Menunggu Persetujuan</h2>
+            </div>
 
-    <div class="container">
-        <h1>Penarikan Tabungan Siswa</h1>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Siswa</th>
-                    <th>Nominal</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if ($penarikans): ?>
-                    <?php foreach ($penarikans as $index => $penarikan): ?>
-                        <tr>
-                            <td><?= $index + 1; ?></td>
-                            <td><?= htmlspecialchars($penarikan['name']); ?></td>
-                            <td>Rp <?= number_format($penarikan['nominal'], 2, ',', '.'); ?></td>
-                            <td><?= ucfirst($penarikan['status']); ?></td>
-                            <td>
-                                <form method="POST" style="display: inline;">
-                                    <input type="hidden" name="penarikan_id" value="<?= $penarikan['id']; ?>">
-                                    <button type="submit" name="action" value="approved" class="action-btn approve-btn">Setujui</button>
-                                    <button type="submit" name="action" value="rejected" class="action-btn reject-btn">Tolak</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
+            <!-- Tabel Penarikan -->
+            <table>
+                <thead>
                     <tr>
-                        <td colspan="5" class="empty-message">Tidak ada permintaan penarikan saat ini.</td>
+                        <th>No</th>
+                        <th>Nama Siswa</th>
+                        <th>Jumlah (Rp)</th>
+                        <th>Saldo (Rp)</th>
+                        <th>Tanggal</th>
+                        <th>Aksi</th>
                     </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php if (count($penarikans) > 0): ?>
+                        <?php foreach ($penarikans as $index => $penarikan): ?>
+                            <tr>
+                                <td><?= $index + 1; ?></td>
+                                <td><?= htmlspecialchars($penarikan['name']); ?></td>
+                                <td><?= number_format($penarikan['nominal'], 0, ',', '.'); ?></td>
+                                <td><?= number_format($penarikan['saldo'], 0, ',', '.'); ?></td>
+                                <td><?= date('d-m-Y H:i', strtotime($penarikan['created_at'])); ?></td>
+                                <td>
+                                    <form method="post" style="display:inline;">
+                                        <input type="hidden" name="penarikan_id" value="<?= $penarikan['id']; ?>">
+                                        <button type="submit" name="action" value="approved" class="btn btn-approve">Setujui</button>
+                                    </form>
+                                    <form method="post" style="display:inline;">
+                                        <input type="hidden" name="penarikan_id" value="<?= $penarikan['id']; ?>">
+                                        <button type="submit" name="action" value="rejected" class="btn btn-reject">Tolak</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6" style="text-align: center;">Tidak ada penarikan yang menunggu persetujuan.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
-
 </body>
 </html>

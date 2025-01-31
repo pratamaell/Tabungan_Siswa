@@ -1,199 +1,341 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navbar Admin</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<!-- Website - www.codingnepalweb.com -->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard</title>
+    <!-- Boxicons CDN Link -->
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Base Styles */
-        body {
+            /* Google Font Link */
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+            *{
             margin: 0;
-            font-family: 'Arial', sans-serif;
-            background: #f5f6fa;
-            color: #2d3436;
-        }
-
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background: linear-gradient(145deg, #2d3436, #3a3e41);
-            color: #dfe6e9;
-            position: fixed;
-            top: 0;
-            left: 0;
-            transition: width 0.3s ease, background 0.3s ease;
-            overflow: hidden;
-            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .sidebar.collapsed {
-            width: 70px;
-        }
-
-        .logo {
-            text-align: center;
-            padding: 20px;
-            background:rgb(85, 172, 171);
-            color: #2d3436;
-            font-size: 30px;
-            font-weight: bold;
-            transition: opacity 0.3s ease, padding 0.3s ease;
-        }
-
-        .logo img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-            transition: width 0.3s ease, height 0.3s ease;
-        }
-
-        .sidebar.collapsed .logo img {
-            width: 40px;
-            height: 40px;
-        }
-
-        .sidebar.collapsed .logo {
-            padding: 10px 0;
-            font-size: 0;
-        }
-
-        #sidebar-title {
-            text-align: center;
-            font-size: 20px;
-            margin: 20px 0;
-            color: #00cec9;
-            opacity: 1;
-            transition: opacity 0.3s ease;
-        }
-
-        .sidebar.collapsed #sidebar-title {
-            opacity: 0;
-        }
-
-        ul {
-            list-style: none;
             padding: 0;
-            margin: 0;
-        }
-
-        ul li {
-            padding: 15px 20px;
+            box-sizing: border-box;
+            font-family: "Poppins" , sans-serif;
+            }
+            .sidebar{
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 78px;
+            background: #11101D;
+            padding: 6px 14px;
+            z-index: 99;
+            transition: all 0.5s ease;
+            }
+            .sidebar.open{
+            width: 250px;
+            }
+            .sidebar .logo-details{
+            height: 60px;
             display: flex;
             align-items: center;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        ul li:hover {
-            background: #00cec9;
-            color: #2d3436;
-            box-shadow: inset 5px 0 5px rgba(0, 0, 0, 0.2);
-        }
-
-        ul li a {
-            text-decoration: none;
-            color: inherit;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            width: 100%;
-            transition: color 0.3s ease;
-        }
-
-        ul li a .icon {
+            position: relative;
+            }
+            .sidebar .logo-details .icon{
+            opacity: 0;
+            transition: all 0.5s ease;
+            }
+            .sidebar .logo-details .logo_name{
+            color: #fff;
             font-size: 20px;
-            margin-right: 15px;
-            transition: margin 0.3s ease;
-        }
-
-        ul li a .text {
-            flex-grow: 1;
-            transition: opacity 0.3s ease;
-        }
-
-        .sidebar.collapsed ul li a .icon {
-            margin-right: 0;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.5s ease;
+            }
+            .sidebar.open .logo-details .icon,
+            .sidebar.open .logo-details .logo_name{
+            opacity: 1;
+            }
+            .sidebar .logo-details #btn{
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            font-size: 22px;
+            transition: all 0.4s ease;
+            font-size: 23px;
             text-align: center;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            }
+            .sidebar.open .logo-details #btn{
+            text-align: right;
+            }
+            .sidebar i{
+            color: #fff;
+            height: 60px;
+            min-width: 50px;
+            font-size: 28px;
+            text-align: center;
+            line-height: 60px;
+            }
+            .sidebar .nav-list{
+            margin-top: 20px;
+            height: 100%;
+            }
+            .sidebar li{
+            position: relative;
+            margin: 8px 0;
+            list-style: none;
+            }
+            .sidebar li .tooltip{
+            position: absolute;
+            top: -20px;
+            left: calc(100% + 15px);
+            z-index: 3;
+            background: #fff;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 400;
+            opacity: 0;
+            white-space: nowrap;
+            pointer-events: none;
+            transition: 0s;
+            }
+            .sidebar li:hover .tooltip{
+            opacity: 1;
+            pointer-events: auto;
+            transition: all 0.4s ease;
+            top: 50%;
+            transform: translateY(-50%);
+            }
+            .sidebar.open li .tooltip{
+            display: none;
+            }
+            .sidebar input{
+            font-size: 15px;
+            color: #FFF;
+            font-weight: 400;
+            outline: none;
+            height: 50px;
             width: 100%;
-        }
-
-        .sidebar.collapsed ul li a .text {
+            width: 50px;
+            border: none;
+            border-radius: 12px;
+            transition: all 0.5s ease;
+            background: #1d1b31;
+            }
+            .sidebar.open input{
+            padding: 0 20px 0 50px;
+            width: 100%;
+            }
+            .sidebar .bx-search{
+            position: absolute;
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            font-size: 22px;
+            background: #1d1b31;
+            color: #FFF;
+            }
+            .sidebar.open .bx-search:hover{
+            background: #1d1b31;
+            color: #FFF;
+            }
+            .sidebar .bx-search:hover{
+            background: #FFF;
+            color: #11101d;
+            }
+            .sidebar li a{
+            display: flex;
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            background: #11101D;
+            }
+            .sidebar li a:hover{
+            background: #FFF;
+            }
+            .sidebar li a .links_name{
+            color: #fff;
+            font-size: 15px;
+            font-weight: 400;
+            white-space: nowrap;
             opacity: 0;
             pointer-events: none;
-        }
-
-        /* Toggle Button */
-        .toggle-btn {
-            position: absolute;
-            top: 20px;
-            right: -20px;
-            width: 40px;
-            height: 40px;
-            background: #00cec9;
-            border: none;
-            color: #2d3436;
-            font-size: 20px;
-            cursor: pointer;
-            border-radius: 50%;
+            transition: 0.4s;
+            }
+            .sidebar.open li a .links_name{
+            opacity: 1;
+            pointer-events: auto;
+            }
+            .sidebar li a:hover .links_name,
+            .sidebar li a:hover i{
+            transition: all 0.5s ease;
+            color: #11101D;
+            }
+            .sidebar li i{
+            height: 50px;
+            line-height: 50px;
+            font-size: 18px;
+            border-radius: 12px;
+            }
+            .sidebar li.profile{
+            position: fixed;
+            height: 60px;
+            width: 78px;
+            left: 0;
+            bottom: -8px;
+            padding: 10px 14px;
+            background: #1d1b31;
+            transition: all 0.5s ease;
+            overflow: hidden;
+            }
+            .sidebar.open li.profile{
+            width: 250px;
+            }
+            .sidebar li .profile-details{
             display: flex;
             align-items: center;
-            justify-content: center;
-            transition: background 0.3s ease, transform 0.3s ease;
-        }
-
-        .toggle-btn:hover {
-            background: #74b9ff;
-            transform: rotate(90deg);
-        }
-
-        /* Content Area */
-        body .content {
-            margin-left: 250px;
-            padding: 20px;
-            transition: margin-left 0.3s ease;
-        }
-
-        body.collapsed .content {
-            margin-left: 70px;
-        }
-
-        /* Media Query for Mobile */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 70px;
+            flex-wrap: nowrap;
             }
-
-            .content {
-                margin-left: 70px;
+            .sidebar li img{
+            height: 45px;
+            width: 45px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-right: 10px;
             }
-        }
+            .sidebar li.profile .name,
+            .sidebar li.profile .job{
+            font-size: 15px;
+            font-weight: 400;
+            color: #fff;
+            white-space: nowrap;
+            }
+            .sidebar li.profile .job{
+            font-size: 12px;
+            }
+            .sidebar .profile #log_out{
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            background: #1d1b31;
+            width: 100%;
+            height: 60px;
+            line-height: 60px;
+            border-radius: 0px;
+            transition: all 0.5s ease;
+            }
+            .sidebar.open .profile #log_out{
+            width: 50px;
+            background: none;
+            }
+            .home-section{
+            position: relative;
+            background: #E4E9F7;
+            min-height: 100vh;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            transition: all 0.5s ease;
+            z-index: 2;
+            }
+            .sidebar.open ~ .home-section{
+            left: 250px;
+            width: calc(100% - 250px);
+            }
+            .home-section .text{
+            display: inline-block;
+            color: #11101d;
+            font-size: 25px;
+            font-weight: 500;
+            margin: 18px
+            }
+            @media (max-width: 420px) {
+            .sidebar li .tooltip{
+                display: none;
+            }
+            }
     </style>
-</head>
-<body>
-    <div class="sidebar" id="sidebar">
-        <div class="logo">
-            <img src="ikon.png" alt="Logo">
-        </div>
-        <button class="toggle-btn" id="toggle-btn" onclick="toggleSidebar()">☰</button>
-        <ul>
-            <li><a href="dashboard_admin.php"><i class="icon fas fa-home"></i><span class="text">Home Admin</span></a></li>
-            <li><a href="#"><i class="icon fas fa-user-graduate"></i><span class="text">Kelola Siswa</span></a></li>
-            <li><a href="#"><i class="icon fas fa-chalkboard"></i><span class="text">Kelola Kelas</span></a></li>
-            <li><a href="#"><i class="icon fas fa-money-bill-alt"></i><span class="text">Laporan Keuangan</span></a></li>
-            <li><a href="manajemen_akun_pengaturan.php"><i class="icon fas fa-cogs"></i><span class="text">Akun</span></a></li>
-            <li><a href="logout.php"><i class=" icon fas fa-sign-out-alt"></i><span class="text">Logout</span></a></li>
-        </ul>
+  </head>
+  <body>
+    <div class="sidebar">
+      <div class="logo-details">
+        <img src="gambar.png" alt="Logo" class="icon" style="width: 45px; height: 45px; object-fit: cover; border-radius: 6px;">
+        <div class="logo_name">Tabungan</div>
+        <i class="bx bx-menu" id="btn"></i>
+      </div>
+      <ul class="nav-list">
+        <li>
+          <a href="dashboard_admin.php">
+            <i class="bx bx-grid-alt"></i>
+            <span class="links_name">Dashboard</span>
+          </a>
+          <span class="tooltip">Dashboard</span>
+        </li>
+        <li>
+          <a href="">
+            <i class="bx bx-user"></i>
+            <span class="links_name">Kelola Siswa</span>
+          </a>
+          <span class="tooltip">Kelola Siswa</span>
+        </li>
+        <li>
+          <a href="#">
+          <i class="fa-solid fa-school"></i>
+            <span class="links_name">Kelola Kelas</span>
+          </a>
+          <span class="tooltip">Kelola Kelas</span>
+        </li>
+        <li>
+          <a href="#">
+          <i class="fa-solid fa-dollar-sign"></i>
+            <span class="links_name">Laporan Keuangan</span>
+          </a>
+          <span class="tooltip">Laporan Keuangan</span>
+        </li>
+        <li>
+          <a href="manajemen_akun_pengaturan.php">
+            <i class="bx bx-folder"></i>
+            <span class="links_name">Akun</span>
+          </a>
+          <span class="tooltip">Akun</span>
+        </li>
+        <li class="profile">
+            <a href="logout.php">
+          <i class="bx bx-log-out" id="log_out"></i>
+          <span class="links_name">Logout</span>
+          </a>
+        </li>
+      </ul>
     </div>
-
     <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const body = document.body;
+            let sidebar = document.querySelector(".sidebar");
+            let closeBtn = document.querySelector("#btn");
+            let searchBtn = document.querySelector(".bx-search");
 
-            sidebar.classList.toggle('collapsed');
-            body.classList.toggle('collapsed');
-        }
+            closeBtn.addEventListener("click", ()=>{
+            sidebar.classList.toggle("open");
+            menuBtnChange();//calling the function(optional)
+            });
+
+            searchBtn.addEventListener("click", ()=>{ // Sidebar open when you click on the search iocn
+            sidebar.classList.toggle("open");
+            menuBtnChange(); //calling the function(optional)
+            });
+
+            // following are the code to change sidebar button(optional)
+            function menuBtnChange() {
+            if(sidebar.classList.contains("open")){
+            closeBtn.classList.replace("bx-menu", "bx-menu-alt-right");//replacing the iocns class
+            }else {
+            closeBtn.classList.replace("bx-menu-alt-right","bx-menu");//replacing the iocns class
+            }
+            }
+
     </script>
-</body>
+  </body>
 </html>
