@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 27, 2025 at 10:28 AM
+-- Generation Time: Jan 31, 2025 at 04:24 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -60,7 +60,7 @@ CREATE TABLE `penarikan` (
 --
 
 INSERT INTO `penarikan` (`id`, `siswa_id`, `nominal`, `tanggal`, `status`) VALUES
-(1, 1, 500000.00, '2025-01-26 14:29:28', 'pending'),
+(1, 1, 500000.00, '2025-01-26 14:29:28', 'rejected'),
 (2, 1, 100000.00, '2025-01-26 14:49:21', 'approved');
 
 -- --------------------------------------------------------
@@ -140,7 +140,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `created_at`, `u
 (1, 'pratama', 'hjhj@gmail.com', '$2y$10$pSnEYl3v3QPpamm0KSX96ufpOdsr1bqI1TgtPUT9XCtdvHDGEzha2', 'admin', '2025-01-24 03:37:50', '2025-01-24 03:37:50'),
 (2, 'pratama', 'tama@gmail.com', '$2y$10$pEboQqVeWutVYcoC0.Domu8ipReZ2YcUO0xoXteJ6/7GdC2Dka5JC', 'bendahara', '2025-01-24 04:20:39', '2025-01-24 04:20:39'),
 (3, 'putri', 'putri@gmail.com', '$2y$10$lljHCm4GGDjcVvzb5geaW.qiwuhbH3M8Djz5IuWPbNezkxphyby0G', 'bendahara', '2025-01-24 06:02:19', '2025-01-24 06:02:19'),
-(4, 'al', 'al@gmail.com', '$2y$10$OJiHuH98RidZGZnSiNe9y.g353s/tF4DyWSSLiu8R2wjmBtAmiquq', 'siswa', '2025-01-24 11:30:10', '2025-01-24 11:30:10');
+(4, 'fahri', 'al@gmail.com', '$2y$10$OJiHuH98RidZGZnSiNe9y.g353s/tF4DyWSSLiu8R2wjmBtAmiquq', 'siswa', '2025-01-24 11:30:10', '2025-01-27 10:04:15');
 
 --
 -- Indexes for dumped tables
