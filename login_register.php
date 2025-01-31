@@ -19,131 +19,99 @@
         }
         .container {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             width: 100%;
+        }
+        .logo {
+            margin-bottom: 20px;
+        }
+        .logo img {
+            width: 150px; /* Adjusted width */
+            height: 150px; /* Adjusted height */
+            border-radius: 50%;
         }
         .form-box {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             width: 100%;
             max-width: 400px;
             text-align: center;
         }
-        .form-box img {
-            width: 150px;
-        }
         .form-box h2 {
             margin-bottom: 20px;
-            font-size: 26px;
-            color: #fff;
-        }
-        .form-box label {
-            display: block;
-            text-align: left;
-            font-weight: bold;
-            margin-bottom: 6px;
-            color: #dfe6e9;
+            font-size: 24px;
         }
         .form-box input, .form-box select {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
+            padding: 10px;
+            margin-bottom: 10px;
             border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
-            font-size: 16px;
+            border-radius: 5px;
             outline: none;
-        }
-        .form-box input::placeholder {
-            color: #dfe6e9;
         }
         .form-box button {
             width: 100%;
-            padding: 12px;
-            background: #0984e3;
+            padding: 10px;
+            background: #1e3c72;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 5px;
             color: #fff;
+            font-size: 16px;
             cursor: pointer;
             transition: background 0.3s;
         }
         .form-box button:hover {
-            background: #74b9ff;
+            background: #2a5298;
         }
-        .toggle-link {
-            margin-top: 15px;
-        }
-        .toggle-link a {
-            color: #74b9ff;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .toggle-link a:hover {
+        .form-box .toggle-link {
+            margin-top: 10px;
+            color: #fff;
+            cursor: pointer;
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="logo">
+            <img src="gambar.png" alt="Logo">
+        </div>
         <div class="form-box">
-            <img src="ikon.png" alt="Logo Tabungan Siswa">
-            <h2 id="form-title">Login</h2>
-            <form id="auth-form" action="auth_process.php" method="POST">
-                <div id="name-section" style="display: none;">
-                    <label for="name">Nama Lengkap</label>
-                    <input type="text" name="name" id="name" placeholder="Masukkan nama lengkap">
-                </div>
-                <label for="email">Email</label>
-                <input type="email" name="email" id="email" placeholder="Masukkan email Anda" required>
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" placeholder="Masukkan password Anda" required>
-                <div id="role-section" style="display: none;">
-                    <label for="role">Role</label>
-                    <select name="role" id="role" required>
-                        <option value="siswa">Siswa</option>
-                        <option value="bendahara">Bendahara</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                <button type="submit" id="submit-button">Login</button>
-                <div class="toggle-link">
-                    <a href="#" id="toggle-link">Belum punya akun? Daftar</a>
-                </div>
+            <h2>Login</h2>
+            <form action="login.php" method="post">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Login</button>
             </form>
+            <div class="toggle-link" onclick="toggleForm()">Belum punya akun? Daftar</div>
+        </div>
+        <div class="form-box" style="display: none;">
+            <h2>Register</h2>
+            <form action="register.php" method="post">
+                <input type="text" name="name" placeholder="Nama" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <select name="role" required>
+                    <option value="">Pilih Role</option>
+                    <option value="siswa">Siswa</option>
+                    <option value="admin">Admin</option>
+                    <option value="bendahara">Bendahara</option>
+                </select>
+                <button type="submit">Register</button>
+            </form>
+            <div class="toggle-link" onclick="toggleForm()">Sudah punya akun? Login</div>
         </div>
     </div>
     <script>
-        const formTitle = document.getElementById('form-title');
-        const authForm = document.getElementById('auth-form');
-        const nameSection = document.getElementById('name-section');
-        const roleSection = document.getElementById('role-section');
-        const submitButton = document.getElementById('submit-button');
-        const toggleLink = document.getElementById('toggle-link');
-
-        toggleLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (formTitle.textContent === 'Login') {
-                formTitle.textContent = 'Register';
-                submitButton.textContent = 'Register';
-                nameSection.style.display = 'block';
-                roleSection.style.display = 'block';
-                toggleLink.textContent = 'Sudah punya akun? Login';
-                authForm.action = 'register_process.php';
-            } else {
-                formTitle.textContent = 'Login';
-                submitButton.textContent = 'Login';
-                nameSection.style.display = 'none';
-                roleSection.style.display = 'none';
-                toggleLink.textContent = 'Belum punya akun? Daftar';
-                authForm.action = 'auth_process.php';
-            }
-        });
+        function toggleForm() {
+            const forms = document.querySelectorAll('.form-box');
+            forms.forEach(form => form.style.display = form.style.display === 'none' ? 'block' : 'none');
+        }
     </script>
 </body>
 </html>

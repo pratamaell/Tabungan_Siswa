@@ -85,18 +85,26 @@ $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            background: linear-gradient(135deg,rgb(175, 173, 189),rgb(65, 60, 123));
             color: #fff;
             padding-top: 80px; /* Offset for the fixed navbar */
         }
 
-        .main-content {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
+            .main-content {
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                margin-left: 250px; /* Sesuaikan dengan lebar sidebar */
+                transition: margin-left 0.3s ease;
+            }
+
+            @media (max-width: 768px) {
+                .main-content {
+                    margin-left: 0; /* Pada layar kecil, tidak ada margin kiri */
+                }
+            }
 
         .header {
             background: #fdcb6e;
@@ -120,7 +128,7 @@ $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
         }
 
         .card {
-            background:rgb(93, 87, 132);
+            background:rgb(64, 55, 135);
             color: #fff;
             padding: 20px;
             border-radius: 10px;

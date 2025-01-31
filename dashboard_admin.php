@@ -29,7 +29,6 @@ $stmt_saldo = $db->prepare($query_saldo);
 $stmt_saldo->execute();
 $total_saldo = $stmt_saldo->fetch(PDO::FETCH_ASSOC);
 
-
 // Ambil data tabungan per bulan
 $query_tabungan_per_bulan = "
     SELECT DATE_FORMAT(tanggal, '%Y-%m') AS bulan, SUM(nominal) AS total_tabungan 
@@ -40,7 +39,6 @@ $stmt_tabungan_per_bulan = $db->prepare($query_tabungan_per_bulan);
 $stmt_tabungan_per_bulan->execute();
 $tabungan_per_bulan = $stmt_tabungan_per_bulan->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,9 +54,20 @@ $tabungan_per_bulan = $stmt_tabungan_per_bulan->fetchAll(PDO::FETCH_ASSOC);
             background: linear-gradient(to bottom right, #dff9fb, #c7ecee);
             color: #333;
         }
-        .main-content {
-            margin-left: 250px;
+        .home-section {
+            position: relative;
+            background: #E4E9F7;
+            min-height: 100vh;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            transition: all 0.5s ease;
+            z-index: 2;
             padding: 20px;
+        }
+        .sidebar.open ~ .home-section {
+            left: 250px;
+            width: calc(100% - 250px);
         }
         .header {
             background: #74b9ff;
@@ -118,8 +127,9 @@ $tabungan_per_bulan = $stmt_tabungan_per_bulan->fetchAll(PDO::FETCH_ASSOC);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         @media (max-width: 768px) {
-            .main-content {
-                margin-left: 0;
+            .home-section {
+                left: 0;
+                width: 100%;
             }
             .card-container {
                 flex-direction: column;
@@ -128,7 +138,7 @@ $tabungan_per_bulan = $stmt_tabungan_per_bulan->fetchAll(PDO::FETCH_ASSOC);
     </style>
 </head>
 <body>
-    <div class="main-content">
+    <div class="home-section">
         <div class="header">Admin Dashboard</div>
         <div class="card-container">
             <div class="card">

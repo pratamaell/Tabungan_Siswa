@@ -59,6 +59,21 @@ try {
             background: linear-gradient(to bottom, #dfefff, #dfefff);
             color: #2d3436;
         }
+        .home-section {
+            position: relative;
+            background: #E4E9F7;
+            min-height: 100vh;
+            top: 0;
+            left: 78px;
+            width: calc(100% - 78px);
+            transition: all 0.5s ease;
+            z-index: 2;
+            padding: 20px;
+        }
+        .sidebar.open ~ .home-section {
+            left: 250px;
+            width: calc(100% - 250px);
+        }
         .container {
             max-width: 1200px;
             margin: 50px auto;
@@ -173,51 +188,52 @@ try {
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>Dashboard Bendahara</h1>
-            <h2>Selamat datang, <?= htmlspecialchars($bendahara['name']); ?>!</h2>
-        </div>
-
-        <!-- Statistik Card -->
-        <div class="stats-container">
-            <div class="card">
-                <i class="fas fa-wallet"></i>
-                <h2>Total Tabungan</h2>
-                <p>Rp <?= number_format($totalTabungan, 0, ',', '.'); ?></p>
+    <div class="home-section">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <h1>Dashboard Bendahara</h1>
+                <h2>Selamat datang, <?= htmlspecialchars($bendahara['name']); ?>!</h2>
             </div>
-        </div>
 
-        <!-- Riwayat Transaksi -->
-        <h2 style="text-align: center; margin-top: 40px; color: #0984e3;">Riwayat Setoran Siswa</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Siswa</th>
-                    <th>Jumlah (Rp)</th>
-                    <th>Tanggal</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (count($transactions) > 0): ?>
-                    <?php foreach ($transactions as $index => $transaction): ?>
-                        <tr>
-                            <td><?= $index + 1; ?></td>
-                            <td><?= htmlspecialchars($transaction['name']); ?></td>
-                            <td><?= number_format($transaction['nominal'], 0, ',', '.'); ?></td>
-                            <td><?= date('d-m-Y H:i', strtotime($transaction['created_at'])); ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
+            <!-- Statistik Card -->
+            <div class="stats-container">
+                <div class="card">
+                    <i class="fas fa-wallet"></i>
+                    <h2>Total Tabungan</h2>
+                    <p>Rp <?= number_format($totalTabungan, 0, ',', '.'); ?></p>
+                </div>
+            </div>
+
+            <!-- Riwayat Transaksi -->
+            <h2 style="text-align: center; margin-top: 40px; color: #0984e3;">Riwayat Setoran Siswa</h2>
+            <table>
+                <thead>
                     <tr>
-                        <td colspan="4" style="text-align: center;">Belum ada transaksi.</td>
+                        <th>No</th>
+                        <th>Nama Siswa</th>
+                        <th>Jumlah (Rp)</th>
+                        <th>Tanggal</th>
                     </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-
+                </thead>
+                <tbody>
+                    <?php if (count($transactions) > 0): ?>
+                        <?php foreach ($transactions as $index => $transaction): ?>
+                            <tr>
+                                <td><?= $index + 1; ?></td>
+                                <td><?= htmlspecialchars($transaction['name']); ?></td>
+                                <td><?= number_format($transaction['nominal'], 0, ',', '.'); ?></td>
+                                <td><?= date('d-m-Y H:i', strtotime($transaction['created_at'])); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="4" style="text-align: center;">Belum ada transaksi.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- FontAwesome untuk ikon -->
