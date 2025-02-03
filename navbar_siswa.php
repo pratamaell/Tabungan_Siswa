@@ -31,8 +31,9 @@
             justify-content: center;
             }
             .nav_image img {
-            height: 35px;
-            width: 35px;
+            margin-left:50px;
+            height: 150px;
+            width: 150px;
             border-radius: 50%;
             object-fit: cover;
             }
@@ -192,8 +193,8 @@
             color: #333;
             }
             .navbar img {
-            height: 40px;
-            width: 40px;
+            height: 250px;
+            width: 250px;
             margin-left: 20px;
             }
 
@@ -286,9 +287,8 @@
     <nav class="sidebar locked">
       <div class="logo_items flex">
         <span class="nav_image">
-          <img src="gambar.png" alt="logo_img" />
+          <img src="logo_utama.png" alt="logo_img" />
         </span>
-        <span class="logo_name">Tabungan</span>
       </div>
       <div class="menu_container">
         <div class="menu_items">
