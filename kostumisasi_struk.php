@@ -1,5 +1,5 @@
 <?php
-// Include connection file (database connection)
+// Include file koneksi database dan navbar
 include 'config/database.php';
 include 'navbar_bendahara.php';
 
@@ -8,7 +8,7 @@ $database = new Database();
 $conn = $database->getConnection();
 
 // Ambil data siswa dengan join ke tabel users
-$query_siswa = "SELECT siswa.id, users.name 
+$query_siswa = "SELECT siswa.id, users.name, siswa.saldo 
                 FROM siswa 
                 INNER JOIN users ON siswa.user_id = users.id";
 $stmt_siswa = $conn->prepare($query_siswa);
@@ -20,41 +20,74 @@ $nomor_transaksi_baru = 'TRX-' . time(); // Format: TRX-1674601234
 
 // Proses penyetoran
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $siswa_id = $_POST['siswa_id'];
-    $nomor = $_POST['nomor'];
-    $tanggal = $_POST['tanggal'];
-    $nominal = $_POST['nominal'];
-    $keterangan = $_POST['keterangan'];
+    $siswa_id = $_POST['siswa_id'] ?? null;
+    $nomor = $_POST['nomor'] ?? null;
+    $tanggal = $_POST['tanggal'] ?? null;
+    $nominal = $_POST['nominal'] ?? null;
+    $keterangan = $_POST['keterangan'] ?? null;
 
-    // Masukkan data ke tabel transaksi
-    $query_transaksi = "INSERT INTO transaksi (siswa_id, nomor, tanggal, nominal, keterangan) VALUES (:siswa_id, :nomor, :tanggal, :nominal, :keterangan)";
-    $stmt_transaksi = $conn->prepare($query_transaksi);
-    $stmt_transaksi->bindParam(':siswa_id', $siswa_id);
-    $stmt_transaksi->bindParam(':nomor', $nomor);
-    $stmt_transaksi->bindParam(':tanggal', $tanggal);
-    $stmt_transaksi->bindParam(':nominal', $nominal);
-    $stmt_transaksi->bindParam(':keterangan', $keterangan);
-
-    if ($stmt_transaksi->execute()) {
-        // Perbarui saldo siswa di tabel siswa
-        $query_saldo = "UPDATE siswa SET saldo = saldo + :nominal WHERE id = :siswa_id";
-        $stmt_saldo = $conn->prepare($query_saldo);
-        $stmt_saldo->bindParam(':nominal', $nominal);
-        $stmt_saldo->bindParam(':siswa_id', $siswa_id);
-        $stmt_saldo->execute();
-
-        echo "<script>alert('Transaksi berhasil disimpan dan saldo siswa diperbarui');</script>";
+    // Validasi input
+    if (!$siswa_id || !$nomor || !$tanggal || !$nominal || !$keterangan) {
+        echo "<script>alert('Semua kolom harus diisi!');</script>";
+    } elseif (!is_numeric($nominal) || $nominal <= 0) {
+        echo "<script>alert('Nominal harus berupa angka positif!');</script>";
     } else {
-        echo "<script>alert('Terjadi kesalahan saat menyimpan transaksi');</script>";
+        // Cek apakah siswa ada di database
+        $query_cek_siswa = "SELECT saldo FROM siswa WHERE id = :siswa_id";
+        $stmt_cek_siswa = $conn->prepare($query_cek_siswa);
+        $stmt_cek_siswa->bindParam(':siswa_id', $siswa_id);
+        $stmt_cek_siswa->execute();
+        $siswa = $stmt_cek_siswa->fetch(PDO::FETCH_ASSOC);
+
+        if (!$siswa) {
+            echo "<script>alert('Siswa tidak ditemukan!');</script>";
+        } else {
+            try {
+                // Mulai transaksi database
+                $conn->beginTransaction();
+
+                // Masukkan data ke tabel transaksi
+                $query_transaksi = "INSERT INTO transaksi (siswa_id, nomor, tanggal, nominal, keterangan) 
+                                    VALUES (:siswa_id, :nomor, :tanggal, :nominal, :keterangan)";
+                $stmt_transaksi = $conn->prepare($query_transaksi);
+                $stmt_transaksi->bindParam(':siswa_id', $siswa_id);
+                $stmt_transaksi->bindParam(':nomor', $nomor);
+                $stmt_transaksi->bindParam(':tanggal', $tanggal);
+                $stmt_transaksi->bindParam(':nominal', $nominal);
+                $stmt_transaksi->bindParam(':keterangan', $keterangan);
+
+                if ($stmt_transaksi->execute()) {
+                    // Perbarui saldo siswa di tabel siswa
+                    $query_saldo = "UPDATE siswa SET saldo = saldo + :nominal WHERE id = :siswa_id";
+                    $stmt_saldo = $conn->prepare($query_saldo);
+                    $stmt_saldo->bindParam(':nominal', $nominal);
+                    $stmt_saldo->bindParam(':siswa_id', $siswa_id);
+                    
+                    if ($stmt_saldo->execute()) {
+                        $conn->commit(); // Konfirmasi transaksi
+                        echo "<script>alert('Transaksi berhasil disimpan dan saldo siswa diperbarui');</script>";
+                    } else {
+                        $conn->rollBack(); // Batalkan transaksi jika gagal
+                        echo "<script>alert('Gagal memperbarui saldo siswa!');</script>";
+                    }
+                } else {
+                    $conn->rollBack();
+                    echo "<script>alert('Gagal menyimpan transaksi!');</script>";
+                }
+            } catch (Exception $e) {
+                $conn->rollBack();
+                echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+            }
+        }
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customize Receipt</title>
+    <title>Input Penyetoran</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -73,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             align-items: center;
             width: 100%;
             max-width: 1200px;
-            margin-top: 100px; /* Avoid collision with navbar */
+            margin-top: 100px;
         }
 
         .container {
@@ -117,10 +150,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             min-height: 120px;
         }
 
-        input[type="text"], input[type="number"], input[type="datetime-local"] {
-            height: 40px;
-        }
-
         button {
             width: 100%;
             background-color: #007bff;
@@ -137,16 +166,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             background-color: #0056b3;
         }
 
-        button:active {
-            background-color: #004085;
-        }
-
         .button-container {
             grid-column: span 2;
             text-align: center;
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .container {
                 grid-template-columns: 1fr;
@@ -160,50 +184,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="content-wrapper">
         <div class="container">
             <h1>INPUT PENYETORAN</h1>
-
-            <!-- Pilih Siswa -->
-            <div>
-                <label for="siswa_id">SISWA:</label>
+            <form method="POST">
+                <label for="siswa_id">Siswa:</label>
                 <select name="siswa_id" required>
-                    <?php if (!empty($result_siswa)): ?>
-                        <?php foreach ($result_siswa as $row): ?>
-                            <option value="<?= htmlspecialchars($row['id']); ?>"><?= htmlspecialchars($row['name']); ?></option>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <option disabled>No students available</option>
-                    <?php endif; ?>
+                    <?php foreach ($result_siswa as $row): ?>
+                        <option value="<?= htmlspecialchars($row['id']); ?>"><?= htmlspecialchars($row['name']); ?></option>
+                    <?php endforeach; ?>
                 </select>
-            </div>
 
-            <!-- Nomor Transaksi -->
-            <div>
-                <label for="transaction_number">Transaction Number:</label>
+                <label>Nomor Transaksi:</label>
                 <input type="hidden" name="nomor" value="<?= htmlspecialchars($nomor_transaksi_baru); ?>">
                 <input type="text" value="<?= htmlspecialchars($nomor_transaksi_baru); ?>" readonly>
-            </div>
 
-            <!-- Tanggal -->
-            <div>
-                <label for="date">TANGGAL:</label>
+                <label>Tanggal:</label>
                 <input type="datetime-local" name="tanggal" required>
-            </div>
 
-            <!-- Harga Item -->
-            <div>
-                <label for="item_price">NOMINAL:</label>
+                <label>Nominal:</label>
                 <input type="number" name="nominal" required>
-            </div>
 
-            <!-- Deskripsi Item -->
-            <div>
-                <label for="item_description">DESKRIPSI:</label>
+                <label>Deskripsi:</label>
                 <textarea name="keterangan" required></textarea>
-            </div>
 
-            <!-- Tombol Submit -->
-            <div class="button-container">
-                <button type="submit">STRUK</button>
-            </div>
+                <div class="button-container">
+                    <button type="submit">Simpan</button>
+                </div>
+            </form>
         </div>
     </div>
 </body>

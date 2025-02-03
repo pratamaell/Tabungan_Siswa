@@ -30,7 +30,12 @@ if ($siswa) {
     $siswa_id = $siswa['id'];
 
     // Ambil total saldo siswa
-    $query_saldo = "SELECT SUM(nominal) as total_saldo FROM transaksi WHERE siswa_id = :siswa_id";
+    $query_saldo = "
+    SELECT SUM(CASE WHEN jenis = 'setoran' THEN nominal ELSE 0 END) 
+         - SUM(CASE WHEN jenis = 'penarikan' THEN nominal ELSE 0 END) 
+         AS total_saldo 
+    FROM transaksi 
+    WHERE siswa_id = :siswa_id";
     $stmt_saldo = $db->prepare($query_saldo);
     $stmt_saldo->bindParam(':siswa_id', $siswa_id, PDO::PARAM_INT);
     $stmt_saldo->execute();
