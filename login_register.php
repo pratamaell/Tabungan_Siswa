@@ -83,7 +83,7 @@
         </div>
         <div class="form-box">
             <h2>Login</h2>
-            <form action="login.php" method="post">
+            <form action="auth_process.php" method="post">
                 <input type="email" name="email" placeholder="Email" required>
                 <input type="password" name="password" placeholder="Password" required>
                 <button type="submit">Login</button>
@@ -92,7 +92,7 @@
         </div>
         <div class="form-box" style="display: none;">
             <h2>Register</h2>
-            <form action="register.php" method="post">
+            <form action="register_process.php" method="post">
                 <input type="text" name="name" placeholder="Nama" required>
                 <input type="email" name="email" placeholder="Email" required>
                 <input type="password" name="password" placeholder="Password" required>

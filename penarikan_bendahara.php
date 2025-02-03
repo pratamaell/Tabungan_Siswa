@@ -1,4 +1,5 @@
 <?php
+ob_start();
 include 'config/database.php';
 include 'navbar_bendahara.php';
 
@@ -6,7 +7,7 @@ include 'navbar_bendahara.php';
 $database = new Database();
 $conn = $database->getConnection();
 
-$query = "SELECT penarikan.*, siswa.saldo, users.name 
+$query = "SELECT penarikan.*, penarikan.created_at, siswa.saldo, users.name 
           FROM penarikan
           INNER JOIN siswa ON penarikan.siswa_id = siswa.id
           INNER JOIN users ON siswa.user_id = users.id
@@ -48,6 +49,7 @@ if (isset($_POST['action'])) {
     header("Location: penarikan_bendahara.php");
     exit();
 }
+ob_end_flush();
 ?>
 
 <!DOCTYPE html>
@@ -193,7 +195,9 @@ if (isset($_POST['action'])) {
                                 <td><?= htmlspecialchars($penarikan['name']); ?></td>
                                 <td><?= number_format($penarikan['nominal'], 0, ',', '.'); ?></td>
                                 <td><?= number_format($penarikan['saldo'], 0, ',', '.'); ?></td>
-                                <td><?= date('d-m-Y H:i', strtotime($penarikan['created_at'])); ?></td>
+                                <td>
+                                    <?= isset($penarikan['created_at']) && $penarikan['created_at'] ? date('d-m-Y H:i', strtotime($penarikan['created_at'])) : 'Tanggal Tidak Tersedia'; ?>
+                                </td>
                                 <td>
                                     <form method="post" style="display:inline;">
                                         <input type="hidden" name="penarikan_id" value="<?= $penarikan['id']; ?>">
