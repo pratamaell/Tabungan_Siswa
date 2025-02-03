@@ -96,17 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             padding: 0;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-        }
-
-        .content-wrapper {
-            display: flex;
-            justify-content: center;
             align-items: center;
-            width: 100%;
-            max-width: 1200px;
-            margin-top: 100px;
+            min-height: 100vh;
         }
 
         .container {
@@ -116,29 +107,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
         }
 
         h1 {
-            grid-column: span 2;
             text-align: center;
             color: #333;
             margin-bottom: 20px;
         }
 
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
         label {
             font-size: 16px;
             color: #555;
-            margin-bottom: 8px;
-            display: block;
+            margin-bottom: 5px;
         }
 
-        select, input[type="text"], input[type="number"], input[type="datetime-local"], textarea {
-            width: 90%;
-            padding: 12px;
-            margin-bottom: 15px;
+        select, input, textarea {
+            width: 100%;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
@@ -147,7 +143,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         textarea {
             resize: vertical;
-            min-height: 120px;
+            min-height: 80px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .button-container {
+            text-align: center;
+            grid-column: span 2;
         }
 
         button {
@@ -166,50 +171,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             background-color: #0056b3;
         }
 
-        .button-container {
-            grid-column: span 2;
-            text-align: center;
-        }
-
         @media (max-width: 768px) {
-            .container {
+            .form-grid {
                 grid-template-columns: 1fr;
-                padding: 20px;
-                width: 90%;
             }
         }
     </style>
 </head>
 <body>
-    <div class="content-wrapper">
-        <div class="container">
-            <h1>INPUT PENYETORAN</h1>
-            <form method="POST">
-                <label for="siswa_id">Siswa:</label>
-                <select name="siswa_id" required>
-                    <?php foreach ($result_siswa as $row): ?>
-                        <option value="<?= htmlspecialchars($row['id']); ?>"><?= htmlspecialchars($row['name']); ?></option>
-                    <?php endforeach; ?>
-                </select>
-
-                <label>Nomor Transaksi:</label>
-                <input type="hidden" name="nomor" value="<?= htmlspecialchars($nomor_transaksi_baru); ?>">
-                <input type="text" value="<?= htmlspecialchars($nomor_transaksi_baru); ?>" readonly>
-
-                <label>Tanggal:</label>
-                <input type="datetime-local" name="tanggal" required>
-
-                <label>Nominal:</label>
-                <input type="number" name="nominal" required>
-
-                <label>Deskripsi:</label>
-                <textarea name="keterangan" required></textarea>
-
-                <div class="button-container">
-                    <button type="submit">Simpan</button>
+    <div class="container">
+        <h1>INPUT PENYETORAN</h1>
+        <form method="POST">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="siswa_id">Siswa:</label>
+                    <select name="siswa_id" required>
+                        <?php foreach ($result_siswa as $row): ?>
+                            <option value="<?= htmlspecialchars($row['id']); ?>">
+                                <?= htmlspecialchars($row['name']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-            </form>
-        </div>
+                
+                <div class="form-group">
+                    <label>Nomor Transaksi:</label>
+                    <input type="hidden" name="nomor" value="<?= htmlspecialchars($nomor_transaksi_baru); ?>">
+                    <input type="text" value="<?= htmlspecialchars($nomor_transaksi_baru); ?>" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Tanggal:</label>
+                    <input type="datetime-local" name="tanggal" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nominal:</label>
+                    <input type="number" name="nominal" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Deskripsi:</label>
+                    <textarea name="keterangan" required></textarea>
+                </div>
+            </div>
+            <br>
+            <div class="button-container">
+                <button type="submit">Simpan</button>
+            </div>
+        </form>
     </div>
 </body>
 </html>
