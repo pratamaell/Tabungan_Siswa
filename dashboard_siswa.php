@@ -29,11 +29,12 @@ $siswa = $stmt_siswa->fetch(PDO::FETCH_ASSOC);
 if ($siswa) {
     $siswa_id = $siswa['id'];
 
-    // Ambil total saldo siswa
+    // Perbaikan perhitungan total saldo (gabungkan transaksi dan penarikan)
     $query_saldo = "
-    SELECT SUM(CASE WHEN jenis = 'setoran' THEN nominal ELSE 0 END) 
-         - SUM(CASE WHEN jenis = 'penarikan' THEN nominal ELSE 0 END) 
-         AS total_saldo 
+    SELECT 
+        (COALESCE(SUM(CASE WHEN jenis = 'setoran' THEN nominal ELSE 0 END), 0) - 
+        COALESCE((SELECT SUM(nominal) FROM penarikan WHERE siswa_id = :siswa_id), 0)) 
+        AS total_saldo 
     FROM transaksi 
     WHERE siswa_id = :siswa_id";
     $stmt_saldo = $db->prepare($query_saldo);
@@ -41,8 +42,13 @@ if ($siswa) {
     $stmt_saldo->execute();
     $saldo = $stmt_saldo->fetch(PDO::FETCH_ASSOC);
 
-    // Ambil riwayat transaksi siswa
-    $query_transaksi = "SELECT * FROM transaksi WHERE siswa_id = :siswa_id ORDER BY created_at DESC LIMIT 5";
+    // Gabungkan transaksi setoran dan penarikan dalam riwayat transaksi
+    $query_transaksi = "
+    (SELECT created_at, 'Setoran' AS keterangan, nominal FROM transaksi WHERE siswa_id = :siswa_id)
+    UNION 
+    (SELECT tanggal AS created_at, 'Penarikan' AS keterangan, nominal FROM penarikan WHERE siswa_id = :siswa_id)
+    ORDER BY created_at DESC LIMIT 5";
+    
     $stmt_transaksi = $db->prepare($query_transaksi);
     $stmt_transaksi->bindParam(':siswa_id', $siswa_id, PDO::PARAM_INT);
     $stmt_transaksi->execute();
@@ -54,10 +60,10 @@ if ($siswa) {
 
 // Ambil data setoran terakhir
 $query_setoran_terakhir = "
-    SELECT nominal, tanggal 
+    SELECT nominal, created_at AS tanggal 
     FROM transaksi 
     WHERE siswa_id = :siswa_id AND jenis = 'setoran' 
-    ORDER BY tanggal DESC 
+    ORDER BY created_at DESC 
     LIMIT 1";
 $stmt_setoran_terakhir = $db->prepare($query_setoran_terakhir);
 $stmt_setoran_terakhir->bindParam(':siswa_id', $siswa_id);
@@ -76,7 +82,6 @@ $stmt_penarikan_terakhir->bindParam(':siswa_id', $siswa_id);
 $stmt_penarikan_terakhir->execute();
 $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
 
-
 ?>
 
 <!DOCTYPE html>
@@ -92,24 +97,24 @@ $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
             font-family: Arial, sans-serif;
             background: linear-gradient(135deg,rgb(175, 173, 189),rgb(65, 60, 123));
             color: #fff;
-            padding-top: 80px; /* Offset for the fixed navbar */
+            padding-top: 80px;
         }
 
-            .main-content {
-                padding: 20px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                margin-left: 250px; /* Sesuaikan dengan lebar sidebar */
-                transition: margin-left 0.3s ease;
-            }
+        .main-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-left: 250px;
+            transition: margin-left 0.3s ease;
+        }
 
-            @media (max-width: 768px) {
-                .main-content {
-                    margin-left: 0; /* Pada layar kecil, tidak ada margin kiri */
-                }
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
             }
+        }
 
         .header {
             background: #fdcb6e;
@@ -133,7 +138,7 @@ $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
         }
 
         .card {
-            background:rgb(64, 55, 135);
+            background: rgb(64, 55, 135);
             color: #fff;
             padding: 20px;
             border-radius: 10px;
@@ -143,25 +148,11 @@ $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
             min-width: 280px;
         }
 
-        .card.riwayat {
-            flex-basis: 100%;
-        }
-
-        .card h3 {
-            margin-bottom: 10px;
-            font-size: 20px;
-        }
-
-        .card p {
-            margin: 0;
-            font-size: 16px;
-        }
-
         .table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            color:rgb(226, 228, 229);
+            color: rgb(226, 228, 229);
         }
 
         .table th, .table td {
@@ -171,7 +162,7 @@ $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
         }
 
         .table th {
-            background:rgb(88, 83, 164);
+            background: rgb(88, 83, 164);
         }
 
         @media (max-width: 768px) {
@@ -184,11 +175,11 @@ $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
 <body>
     <div class="main-content">
         <div class="header">
-        <h3>Selamat Datang, <?php echo $user['name']; ?>!</h3>
-        <p>Berikut adalah informasi tabungan Anda:</p>
+            <h3>Selamat Datang, <?php echo htmlspecialchars($user['name']); ?>!</h3>
+            <p>Berikut adalah informasi tabungan Anda:</p>
         </div>
         <div class="cards">
-            <div class="card">
+        <div class="card">
                 <h3>Setoran Terakhir</h3>
                 <?php if ($setoran_terakhir): ?>
                     <p><b>Rp <?php echo number_format($setoran_terakhir['nominal'], 0, ',', '.'); ?></b></p>
@@ -207,10 +198,8 @@ $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
                 <?php endif; ?>
             </div>
             <div class="card">
-                <center>
-                <h2>Total Saldo</h3>
+                <h3>Total Saldo</h3>
                 <h4>Rp <?php echo number_format($saldo['total_saldo'], 0, ',', '.'); ?></h4>
-                </center>
             </div>
             <div class="card riwayat">
                 <h3>Riwayat Transaksi</h3>
@@ -223,19 +212,13 @@ $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (!empty($transaksi)): ?>
-                            <?php foreach ($transaksi as $trx): ?>
-                                <tr>
-                                    <td><?php echo date('d M Y', strtotime($trx['created_at'])); ?></td>
-                                    <td><?php echo $trx['keterangan']; ?></td>
-                                    <td>Rp <?php echo number_format($trx['nominal'], 0, ',', '.'); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
+                        <?php foreach ($transaksi as $trx): ?>
                             <tr>
-                                <td colspan="3">Tidak ada transaksi.</td>
+                                <td><?php echo date('d M Y', strtotime($trx['created_at'])); ?></td>
+                                <td><?php echo $trx['keterangan']; ?></td>
+                                <td>Rp <?php echo number_format($trx['nominal'], 0, ',', '.'); ?></td>
                             </tr>
-                        <?php endif; ?>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
