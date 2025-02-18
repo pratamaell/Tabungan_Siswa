@@ -33,7 +33,7 @@ if ($siswa) {
     $query_saldo = "
     SELECT 
         (COALESCE(SUM(CASE WHEN jenis = 'setoran' THEN nominal ELSE 0 END), 0) - 
-        COALESCE((SELECT SUM(nominal) FROM penarikan WHERE siswa_id = :siswa_id), 0)) 
+        COALESCE((SELECT SUM(nominal) FROM penarikan WHERE siswa_id = :siswa_id AND status = 'approved'), 0)) 
         AS total_saldo 
     FROM transaksi 
     WHERE siswa_id = :siswa_id";
@@ -82,6 +82,8 @@ $stmt_penarikan_terakhir->bindParam(':siswa_id', $siswa_id);
 $stmt_penarikan_terakhir->execute();
 $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
 
+$today = date('d'); // Ambil tanggal hari ini
+$showReminder = ($today == '12'); // Jika tanggal 10, tampilkan pengingat
 ?>
 
 <!DOCTYPE html>
@@ -90,6 +92,7 @@ $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Siswa Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
@@ -224,5 +227,25 @@ $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
             </div>
         </div>
     </div>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        <?php if ($showReminder): ?>
+            Swal.fire({
+                title: "Pengingat KAS!",
+                text: "Hari ini tanggal 12, jangan lupa untuk bayar KAS ya!",
+                icon: "info",
+                confirmButtonText: "Siap!"
+            });
+        <?php else: ?>
+            Swal.fire({
+                title: "Selamat Datang!",
+                text: "Halo, <?php echo htmlspecialchars($user['name']); ?>! Selamat datang di dashboard siswa.",
+                icon: "success",
+                confirmButtonText: "Terima Kasih!"
+            });
+        <?php endif; ?>
+    });
+</script>
+
 </body>
 </html>

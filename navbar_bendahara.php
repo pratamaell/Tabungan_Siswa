@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <!-- Website - www.codingnepalweb.com -->
 <html lang="en" dir="ltr">
@@ -259,6 +260,17 @@
                 display: none;
             }
             }
+            .badge {
+              background: red;
+              color: white;
+              border-radius: 50%;
+              padding: 5px 10px;
+              font-size: 12px;
+              margin-left: 5px;
+              display: none; /* Sembunyikan jika tidak ada notifikasi */
+            }
+
+
 
     </style>
   </head>
@@ -286,10 +298,32 @@
         </li>
         <li>
           <a href="penarikan_bendahara.php">
-          <i class="fa-solid fa-money-check"></i>
+            <i class="fa-solid fa-money-check"></i>
             <span class="links_name">Penarikan</span>
+            <span class="badge" id="notif_penarikan">0</span> <!-- Tambahkan Badge -->
           </a>
           <span class="tooltip">Penarikan</span>
+        </li>
+        <li>
+          <a href="pengeluaran_bendahara.php">
+          <i class="fa-solid fa-wallet"></i>
+            <span class="links_name">Pengeluaran</span>
+          </a>
+          <span class="tooltip">Pengeluaran</span>
+        </li>
+        <li>
+          <a href="laporan_bendahara.php">
+          <i class="fa-solid fa-chart-line"></i>
+            <span class="links_name">Laporan</span>
+          </a>
+          <span class="tooltip">Laporan</span>
+        </li>
+        <li>
+          <a href="riwayat_bendahara.php">
+          <i class="fa-solid fa-timeline"></i>
+            <span class="links_name">Riwayat</span>
+          </a>
+          <span class="tooltip">Riwayat</span>
         </li>
         <li>
         <li class="profile">
@@ -323,6 +357,26 @@
             closeBtn.classList.replace("bx-menu-alt-right","bx-menu");//replacing the iocns class
             }
             }
+
+            function updateNotifPenarikan() {
+          fetch("get_notif_penarikan.php")
+            .then(response => response.text())
+            .then(data => {
+              let notifElement = document.getElementById("notif_penarikan");
+              if (parseInt(data) > 0) {
+                notifElement.innerText = data;
+                notifElement.style.display = "inline-block";
+              } else {
+                notifElement.style.display = "none";
+              }
+            })
+            .catch(error => console.error("Error fetching data:", error));
+        }
+
+        // Panggil pertama kali saat halaman dimuat
+        updateNotifPenarikan();
+        // Update setiap 5 detik
+        setInterval(updateNotifPenarikan, 5000);
 
     </script>
   </body>

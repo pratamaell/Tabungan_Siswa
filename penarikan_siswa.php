@@ -24,21 +24,18 @@ $siswa = $stmt_siswa->fetch(PDO::FETCH_ASSOC);
 if ($siswa) {
     $siswa_id = $siswa['id'];
 
-    // Ambil total saldo siswa (setoran - penarikan)
-    $query_saldo = "
-        SELECT 
-            SUM(CASE WHEN jenis = 'setoran' THEN nominal ELSE 0 END) - 
-            SUM(CASE WHEN jenis = 'penarikan' THEN nominal ELSE 0 END) AS total_saldo
-        FROM transaksi 
-        WHERE siswa_id = :siswa_id";
+    $query_saldo = "SELECT saldo FROM siswa WHERE id = :siswa_id";
     $stmt_saldo = $conn->prepare($query_saldo);
     $stmt_saldo->bindParam(':siswa_id', $siswa_id, PDO::PARAM_INT);
     $stmt_saldo->execute();
-    $saldo = $stmt_saldo->fetch(PDO::FETCH_ASSOC);
-    $saldo = $saldo['total_saldo'] ?? 0; // Jika saldo tidak ada, set 0
-} else {
-    $saldo = 0;
-}
+    $result = $stmt_saldo->fetch(PDO::FETCH_ASSOC);
+
+    if ($result) {
+        $saldo = $result['saldo']; // Ambil saldo dari database
+    } else {
+        $saldo = 0; // Jika data tidak ditemukan, set saldo jadi 0
+    }
+    }
 
 // Proses pengajuan penarikan
 if (isset($_POST['submit'])) {
@@ -46,18 +43,42 @@ if (isset($_POST['submit'])) {
 
     if ($nominal > 0 && $nominal <= $saldo) {
         // Simpan permintaan penarikan ke database
-        $query_penarikan = "INSERT INTO penarikan (siswa_id, nominal, status) VALUES (:siswa_id, :nominal, 'pending')";
+        $query_penarikan = "INSERT INTO penarikan (siswa_id, nominal, status, nomor) VALUES (:siswa_id, :nominal, 'pending', :nomor)";
         $stmt_penarikan = $conn->prepare($query_penarikan);
         $stmt_penarikan->bindParam(':siswa_id', $siswa_id);
         $stmt_penarikan->bindParam(':nominal', $nominal);
+        $nomor = uniqid('TRX'); // Menggunakan metode unik untuk nomor transaksi
+        $stmt_penarikan->bindParam(':nomor', $nomor);
         $stmt_penarikan->execute();
+    
+        echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>';
+        echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: 'Permintaan penarikan berhasil diajukan. Nomor transaksi: " . $nomor . "',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = 'penarikan_siswa.php';
+                    });
+                });
+            </script>";
+        exit();
 
-        // Tampilkan pesan berhasil
-        echo "<script>alert('Permintaan penarikan berhasil diajukan.');</script>";
     } else {
-        echo "<script>alert('Nominal penarikan melebihi saldo atau tidak valid.');</script>";
+        // SweetAlert2 Error
+        echo "<script>
+                Swal.fire({
+                    title: 'Gagal!',
+                    text: 'Nominal penarikan melebihi saldo atau tidak valid.',
+                    icon: 'error',
+                    confirmButtonText: 'Coba Lagi'
+                });
+              </script>";
     }
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -66,6 +87,8 @@ if (isset($_POST['submit'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Penarikan Tabungan Siswa</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         body {
             font-family: 'Arial', sans-serif;

@@ -1,6 +1,6 @@
 <?php
-session_start(); // Memulai session untuk menampilkan pesan error/sukses
-require_once 'config/database.php'; // Menghubungkan ke database
+session_start();
+require_once 'config/database.php'; // Koneksi ke database
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Ambil input dari form
@@ -8,6 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
     $role = trim($_POST['role']);
+    $kelas_id = isset($_POST['kelas_id']) ? trim($_POST['kelas_id']) : null; // Hanya untuk siswa
 
     // Validasi input
     if (empty($name) || empty($email) || empty($password) || empty($role)) {
@@ -16,21 +17,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit();
     }
 
-    // Validasi format email
+    // Validasi email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['error'] = "Format email tidak valid.";
         header("Location: login_register.php");
         exit();
     }
 
-    // Hash password untuk keamanan
+    // Hash password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
     try {
-        // Koneksi ke database
+        // Koneksi database
         $db = (new Database())->getConnection();
 
-        // Periksa apakah email sudah terdaftar
+        // Cek apakah email sudah terdaftar
         $checkEmailQuery = "SELECT id FROM users WHERE email = :email";
         $stmt = $db->prepare($checkEmailQuery);
         $stmt->bindParam(':email', $email);
@@ -42,20 +43,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             exit();
         }
 
-        // Simpan data ke database
-        $insertQuery = "INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)";
-        $stmt = $db->prepare($insertQuery);
+        // Simpan data ke tabel users
+        $insertUserQuery = "INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)";
+        $stmt = $db->prepare($insertUserQuery);
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':password', $hashed_password);
         $stmt->bindParam(':role', $role);
 
         if ($stmt->execute()) {
+            $user_id = $db->lastInsertId(); // Ambil ID user yang baru saja dibuat
+
+            // Jika role adalah siswa, tambahkan ke tabel siswa
+            if ($role === "siswa" && !empty($kelas_id)) {
+                $insertSiswaQuery = "INSERT INTO siswa (user_id, kelas_id, saldo) VALUES (:user_id, :kelas_id, 0)";
+                $stmt_siswa = $db->prepare($insertSiswaQuery);
+                $stmt_siswa->bindParam(':user_id', $user_id);
+                $stmt_siswa->bindParam(':kelas_id', $kelas_id);
+                $stmt_siswa->execute();
+            }
+
             $_SESSION['success'] = "Registrasi berhasil. Silakan login.";
             header("Location: login_register.php");
             exit();
         } else {
-            $_SESSION['error'] = "Gagal menyimpan data. Silakan coba lagi.";
+            $_SESSION['error'] = "Gagal menyimpan data.";
             header("Location: login_register.php");
             exit();
         }
@@ -69,4 +81,3 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     header("Location: login_register.php");
     exit();
 }
-?>

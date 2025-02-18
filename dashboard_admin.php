@@ -24,20 +24,24 @@ $stmt_kelas->execute();
 $total_kelas = $stmt_kelas->fetch(PDO::FETCH_ASSOC);
 
 // Hitung total saldo semua siswa
-$query_saldo = "SELECT SUM(nominal) as total_saldo FROM transaksi";
+$query_saldo = "SELECT SUM(saldo) as total_saldo FROM siswa";
 $stmt_saldo = $db->prepare($query_saldo);
 $stmt_saldo->execute();
 $total_saldo = $stmt_saldo->fetch(PDO::FETCH_ASSOC);
 
-// Ambil data tabungan per bulan
+// Ambil data setoran & penarikan per bulan
 $query_tabungan_per_bulan = "
-    SELECT DATE_FORMAT(tanggal, '%Y-%m') AS bulan, SUM(nominal) AS total_tabungan 
-    FROM transaksi 
+    SELECT 
+        DATE_FORMAT(tanggal, '%Y-%m') AS bulan,
+        SUM(CASE WHEN jenis = 'setoran' THEN nominal ELSE 0 END) AS total_tabungan,
+        SUM(CASE WHEN jenis = 'penarikan' THEN nominal ELSE 0 END) AS total_penarikan
+    FROM transaksi
     GROUP BY DATE_FORMAT(tanggal, '%Y-%m')
     ORDER BY DATE_FORMAT(tanggal, '%Y-%m')";
 $stmt_tabungan_per_bulan = $db->prepare($query_tabungan_per_bulan);
 $stmt_tabungan_per_bulan->execute();
 $tabungan_per_bulan = $stmt_tabungan_per_bulan->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
@@ -164,47 +168,60 @@ $tabungan_per_bulan = $stmt_tabungan_per_bulan->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
     <script>
-        // Data untuk grafik
-        const labels = <?php echo json_encode(array_column($tabungan_per_bulan, 'bulan')); ?>;
-        const data = {
-            labels: labels,
-            datasets: [{
-                label: 'Total Tabungan',
+    // Data untuk grafik
+    const labels = <?php echo json_encode(array_column($tabungan_per_bulan, 'bulan')); ?>;
+    const totalTabungan = <?php echo json_encode(array_column($tabungan_per_bulan, 'total_tabungan')); ?>;
+    const totalPenarikan = <?php echo json_encode(array_column($tabungan_per_bulan, 'total_penarikan')); ?>;
+
+    const data = {
+        labels: labels,
+        datasets: [
+            {
+                label: 'Total Setoran',
                 backgroundColor: 'rgba(54, 162, 235, 0.2)',
                 borderColor: 'rgba(54, 162, 235, 1)',
-                data: <?php echo json_encode(array_column($tabungan_per_bulan, 'total_tabungan')); ?>,
+                data: totalTabungan,
                 fill: false,
-            }]
-        };
+            },
+            {
+                label: 'Total Penarikan',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                data: totalPenarikan,
+                fill: false,
+            }
+        ]
+    };
 
-        // Konfigurasi untuk grafik
-        const config = {
-            type: 'line',
-            data: data,
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Bulan'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Total Tabungan (Rp)'
-                        }
+    // Konfigurasi untuk grafik
+    const config = {
+        type: 'line',
+        data: data,
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Bulan'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Total Nominal (Rp)'
                     }
                 }
             }
-        };
+        }
+    };
 
-        // Inisialisasi grafik
-        const tabunganChart = new Chart(
-            document.getElementById('tabunganChart'),
-            config
-        );
-    </script>
+    // Inisialisasi grafik
+    const tabunganChart = new Chart(
+        document.getElementById('tabunganChart'),
+        config
+    );
+</script>
+
 </body>
 </html>

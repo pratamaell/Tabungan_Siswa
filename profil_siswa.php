@@ -153,7 +153,9 @@ $profil = $stmt_profil->fetch(PDO::FETCH_ASSOC);
                         <p><?php echo htmlspecialchars($profil['nama_kelas']); ?></p>
                     </div>
                 </div>
-                <button class="edit-button">Edit Profil</button>
+                <a href="edit_akun_siswa.php">
+                    <button class="edit-button">Edit Profil</button>
+                </a>
             </div>
         </div>
     </div>
