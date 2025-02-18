@@ -1,0 +1,215 @@
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom right, #dff9fb, #c7ecee);
+            color: #333;
+        }
+
+        .home-section {
+            position: relative;
+            background: #E4E9F7;
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+
+        .header {
+            background: #74b9ff;
+            padding: 20px;
+            text-align: center;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table thead {
+            background: #74b9ff;
+            color: #fff;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            border: none;
+            /* Hapus border bawah pada setiap sel */
+        }
+
+        .table tbody tr:hover {
+            background: #dfe6e9;
+            transition: background 0.3s ease;
+        }
+
+        .icon {
+            text-decoration: none;
+            margin: 0 5px;
+            font-size: 18px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination a,
+        .pagination .next-btn {
+            background-color: #0984e3;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .pagination a:hover,
+        .pagination .next-btn:hover {
+            background-color: #0652DD;
+        }
+
+        .pagination .next-btn {
+            background-color: #3498db;
+            font-weight: bold;
+            padding: 10px 20px;
+        }
+
+        /* Styling tombol tambah */
+        .btn-add-class {
+            background-color: #0984e3;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .btn-add-class:hover {
+            background-color: #0668b3;
+        }
+
+        /* Perbaiki modal agar bisa muncul */
+        .modal {
+            display: none;
+            /* Default disembunyikan */
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Pastikan modal muncul */
+        .modal.show {
+            display: flex !important;
+        }
+
+        /* Style konten modal */
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 350px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Tombol close */
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Modal disembunyikan dulu */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Modal content dengan efek animasi */
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 350px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+
+            /* Animasi muncul dari atas */
+            transform: translateY(-50px);
+            opacity: 0;
+            transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+        }
+
+        /* Saat modal muncul */
+        .modal.show .modal-content {
+            transform: translateY(0);
+            /* Kembali ke posisi normal */
+            opacity: 1;
+        }
+
+
+        /* Styling form */
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-container input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .btn-submit {
+            background-color: #00b894;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .btn-submit:hover {
+            background-color: #008f72;
+        }

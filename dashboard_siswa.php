@@ -84,8 +84,6 @@ $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
 
 $today = date('d'); // Ambil tanggal hari ini
 $showReminder = ($today == '12'); // Jika tanggal 10, tampilkan pengingat
-
-
 ?>
 
 <!DOCTYPE html>
