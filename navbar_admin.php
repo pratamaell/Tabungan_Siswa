@@ -291,7 +291,7 @@
           <span class="tooltip">Kelola Kelas</span>
         </li>
         <li>
-          <a href="#">
+          <a href="laporan_admin.php">
           <i class="fa-solid fa-dollar-sign"></i>
             <span class="links_name">Laporan Keuangan</span>
           </a>

@@ -29,17 +29,21 @@ $query_transaksi = "
     " . ($filter_jenis ? "AND t.jenis = :jenis " : "") . "
     " . ($filter_tanggal_mulai ? "AND t.tanggal >= :tanggal_mulai " : "") . "
     " . ($filter_tanggal_selesai ? "AND t.tanggal <= :tanggal_selesai " : "") . "
+    
     UNION ALL
-    SELECT 'penarikan' AS jenis, '' AS nomor, p.nominal, p.tanggal, p.status AS keterangan 
+    
+    SELECT 'penarikan' AS jenis, p.nomor, p.nominal, p.tanggal, p.status AS keterangan 
     FROM penarikan p
     JOIN siswa s ON p.siswa_id = s.id
     WHERE s.user_id = :user_id
     " . ($filter_jenis ? "AND 'penarikan' = :jenis " : "") . "
     " . ($filter_tanggal_mulai ? "AND p.tanggal >= :tanggal_mulai " : "") . "
     " . ($filter_tanggal_selesai ? "AND p.tanggal <= :tanggal_selesai " : "") . "
+    
     ORDER BY tanggal DESC
     LIMIT :limit OFFSET :offset;
 ";
+
 $stmt_transaksi = $conn->prepare($query_transaksi);
 $stmt_transaksi->bindParam(':user_id', $siswa_id);
 if ($filter_jenis) $stmt_transaksi->bindParam(':jenis', $filter_jenis);

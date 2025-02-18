@@ -1,4 +1,5 @@
 <?php
+ob_start(); 
 // Include file koneksi database dan navbar
 include 'config/database.php';
 include 'navbar_bendahara.php';
@@ -16,8 +17,7 @@ $stmt_siswa->execute();
 $result_siswa = $stmt_siswa->fetchAll(PDO::FETCH_ASSOC);
 
 // Generate nomor transaksi baru
-$nomor_transaksi_baru = 'TRX-' . time(); // Format: TRX-1674601234
-
+$nomor_transaksi_baru = 'TRX-' . time();
 // Proses penyetoran
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $siswa_id = $_POST['siswa_id'] ?? null;
@@ -66,6 +66,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if ($stmt_saldo->execute()) {
                         $conn->commit(); // Konfirmasi transaksi
                         echo "<script>alert('Transaksi berhasil disimpan dan saldo siswa diperbarui');</script>";
+
+                        // Redirect ke halaman generate_receipt
+                        header("Location: generate_receipt.php?nomor=" . urlencode($nomor));
+                        exit();
                     } else {
                         $conn->rollBack(); // Batalkan transaksi jika gagal
                         echo "<script>alert('Gagal memperbarui saldo siswa!');</script>";
@@ -181,7 +185,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <div class="container">
         <h1>INPUT PENYETORAN</h1>
-        <form method="POST">
+        <form method="POST" action="">
             <div class="form-grid">
                 <div class="form-group full-width">
                     <label for="siswa_id">Siswa:</label>

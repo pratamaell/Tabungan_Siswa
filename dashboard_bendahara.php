@@ -23,22 +23,34 @@ try {
     $bendahara = $stmt->fetch(PDO::FETCH_ASSOC);
 
     // Ambil total tabungan
-    $queryTotal = "SELECT SUM(nominal) AS total_tabungan FROM transaksi WHERE jenis = 'setoran'";
+    $queryTotal = "SELECT SUM(saldo) AS total_tabungan FROM siswa";
     $stmt = $db->prepare($queryTotal);
     $stmt->execute();
     $totalTabungan = $stmt->fetch(PDO::FETCH_ASSOC)['total_tabungan'] ?? 0;
 
     // Ambil riwayat transaksi
-    $queryTransactions = "SELECT t.id, u.name, t.nominal, t.jenis, t.created_at 
-                      FROM transaksi t
-                      JOIN siswa s ON t.siswa_id = s.id
-                      JOIN users u ON s.user_id = u.id
-                      WHERE t.jenis = 'setoran'
-                      ORDER BY t.created_at DESC";
+    // Ambil riwayat transaksi (setoran + penarikan)
+        $queryTransactions = "
+        SELECT t.id, u.name, t.nominal, 'Setoran' AS jenis, t.created_at 
+        FROM transaksi t
+        JOIN siswa s ON t.siswa_id = s.id
+        JOIN users u ON s.user_id = u.id
+        WHERE t.jenis = 'setoran'
 
-    $stmt = $db->prepare($queryTransactions);
-    $stmt->execute();
-    $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        UNION
+
+        SELECT p.id, u.name, p.nominal, 'Penarikan' AS jenis, p.created_at 
+        FROM penarikan p
+        JOIN siswa s ON p.siswa_id = s.id
+        JOIN users u ON s.user_id = u.id
+        WHERE p.status = 'approved' 
+
+        ORDER BY created_at DESC";
+
+        $stmt = $db->prepare($queryTransactions);
+        $stmt->execute();
+        $transactions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage());
 }
@@ -206,7 +218,7 @@ try {
             </div>
 
             <!-- Riwayat Transaksi -->
-            <h2 style="text-align: center; margin-top: 40px; color: #0984e3;">Riwayat Setoran Siswa</h2>
+            <h2 style="text-align: center; margin-top: 40px; color: #0984e3;">Riwayat Setoran | Penarikan Siswa</h2>
             <table>
                 <thead>
                     <tr>
