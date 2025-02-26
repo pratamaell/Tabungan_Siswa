@@ -33,103 +33,166 @@ $profil = $stmt_profil->fetch(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profil Siswa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg,rgb(175, 173, 189),rgb(65, 60, 123));
-            color: #fff;
-            padding-top: 80px; /* Offset for the fixed navbar */
-        }
+    :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --accent: #4cc9f0;
+        --background: #f8fafc;
+        --card-bg: rgba(255, 255, 255, 0.95);
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --success: #2ecc71;
+        --gradient: linear-gradient(135deg, #4361ee, #3f37c9);
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+    body {
+        margin: 0;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--background);
+        min-height: 100vh;
+        background-image: 
+            radial-gradient(at 40% 20%, rgba(67, 97, 238, 0.1) 0px, transparent 50%),
+            radial-gradient(at 80% 0%, rgba(76, 201, 240, 0.1) 0px, transparent 50%),
+            radial-gradient(at 0% 50%, rgba(67, 97, 238, 0.1) 0px, transparent 50%);
+    }
 
-        .main-content {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
+    .home-section {
+        position: relative;
+        min-height: 100vh;
+        width: calc(100% - 250px);
+        left: 250px;
+        transition: all 0.3s ease;
+        padding: 2rem;
+    }
 
-        .header {
-            background: #fdcb6e;
-            padding: 20px;
-            border-radius: 10px;
-            color: #2d3436;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            margin-left:380px;
+    .main-content {
+        max-width: 800px;
+        margin: 0 auto;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .header {
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .header h3 {
+        margin: 0;
+        font-size: 2rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+    }
+
+    .profile-container {
+        background: var(--card-bg);
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .profile-container h3 {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .profile-info {
+        display: grid;
+        gap: 1.5rem;
+    }
+
+    .profile-info div {
+        background: rgba(67, 97, 238, 0.05);
+        padding: 1.5rem;
+        border-radius: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: transform 0.3s ease;
+    }
+
+    .profile-info div:hover {
+        transform: translateX(10px);
+        background: rgba(67, 97, 238, 0.1);
+    }
+
+    .profile-info span {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .profile-info p {
+        color: var(--text-primary);
+        font-weight: 600;
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .edit-button {
+        width: 100%;
+        padding: 1rem;
+        margin-top: 2rem;
+        background: var(--gradient);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .edit-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+    }
+
+    @keyframes fadeIn {
+        from { 
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .home-section {
             width: 100%;
-            max-width: 700px;
+            left: 0;
+            padding: 1rem;
         }
 
-        .profile-container {
-            background:rgb(64, 55, 135);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 500px;
-            color: #333;
-            margin-left:380px;
+        .header, .profile-container {
+            padding: 1.5rem;
         }
 
-        .profile-container h3 {
-            margin-bottom: 20px;
-            font-size: 22px;
-            color:rgb(232, 231, 241);
-        }
-
-        .profile-container .profile-info {
-            display: flex;
+        .profile-info div {
             flex-direction: column;
-            gap: 10px;
+            align-items: flex-start;
+            gap: 0.5rem;
         }
 
-        .profile-container .profile-info div {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            background: #f1f1f1;
-            border-radius: 5px;
+        .profile-info div:hover {
+            transform: none;
         }
-
-        .profile-container .profile-info div span {
-            font-weight: bold;
-        }
-
-        .profile-container .profile-info div p {
-            margin: 0;
-        }
-
-        .profile-container .edit-button {
-            margin-top: 20px;
-            padding: 10px;
-            background: #6c5ce7;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .profile-container .edit-button:hover {
-            background: #a29bfe;
-        }
-
-        @media (max-width: 768px) {
-            .home-section {
-                left: 0;
-                width: 100%;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
     <div class="home-section">

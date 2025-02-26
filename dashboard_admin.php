@@ -23,11 +23,13 @@ $stmt_kelas = $db->prepare($query_kelas);
 $stmt_kelas->execute();
 $total_kelas = $stmt_kelas->fetch(PDO::FETCH_ASSOC);
 
-// Hitung total saldo semua siswa
-$query_saldo = "SELECT SUM(saldo) as total_saldo FROM siswa";
+$query_saldo = "SELECT 
+                    (SUM(s.saldo) - COALESCE((SELECT SUM(nominal) FROM pengeluaran), 0)) AS total_saldo 
+                FROM siswa s";
 $stmt_saldo = $db->prepare($query_saldo);
 $stmt_saldo->execute();
 $total_saldo = $stmt_saldo->fetch(PDO::FETCH_ASSOC);
+
 
 // Ambil data setoran & penarikan per bulan
 $query_tabungan_per_bulan = "
@@ -42,6 +44,20 @@ $stmt_tabungan_per_bulan = $db->prepare($query_tabungan_per_bulan);
 $stmt_tabungan_per_bulan->execute();
 $tabungan_per_bulan = $stmt_tabungan_per_bulan->fetchAll(PDO::FETCH_ASSOC);
 
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Admin';
+
+$labels = array_column($tabungan_per_bulan, 'bulan');
+$totalTabungan = array_column($tabungan_per_bulan, 'total_tabungan');
+$totalPenarikan = array_column($tabungan_per_bulan, 'total_penarikan');
+
+// Jika data kosong, berikan nilai default
+if (empty($labels)) {
+    $labels = ['Tidak Ada Data'];
+    $totalTabungan = [0];
+    $totalPenarikan = [0];
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -49,178 +65,435 @@ $tabungan_per_bulan = $stmt_tabungan_per_bulan->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Admin Dashboard</title>
     <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #4cc9f0;
+            --accent-color: #3a0ca3;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --transition: all 0.3s ease;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --card-shadow: 0 8px 20px rgba(67, 97, 238, 0.15);
+            --border-radius: 16px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to bottom right, #dff9fb, #c7ecee);
-            color: #333;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #ebedfa 100%);
+            color: var(--dark-color);
+            font-size: 15px;
+            line-height: 1.6;
         }
+        
         .home-section {
             position: relative;
-            background: #E4E9F7;
             min-height: 100vh;
             top: 0;
             left: 78px;
             width: calc(100% - 78px);
-            transition: all 0.5s ease;
+            transition: var(--transition);
             z-index: 2;
-            padding: 20px;
+            padding: 25px;
         }
+        
         .sidebar.open ~ .home-section {
             left: 250px;
             width: calc(100% - 250px);
         }
+        
         .header {
-            background: #74b9ff;
-            padding: 20px;
+            background: linear-gradient(120deg, var(--primary-color), var(--secondary-color));
+            padding: 25px;
             text-align: center;
-            color: #fff;
-            font-size: 24px;
-            font-weight: bold;
-            border-radius: 8px;
+            color: white;
+            font-size: 28px;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
         }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(rgba(255, 255, 255, 0.1), transparent);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
         .card-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
         }
+        
         .card {
-            flex: 1;
-            min-width: 280px;
-            background: linear-gradient(to bottom right, #ffffff, #dff9fb);
-            color: #2d3436;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+            background: white;
+            color: var(--dark-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            z-index: -1;
+        }
+        
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 30px rgba(67, 97, 238, 0.2);
         }
+        
+        .card-icon {
+            font-size: 42px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            background: rgba(67, 97, 238, 0.08);
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
         .card h3 {
-            margin-bottom: 10px;
-            font-size: 20px;
-            color: #0984e3;
+            margin-bottom: 15px;
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--dark-color);
         }
+        
         .card p {
             margin: 0;
             font-size: 16px;
+            color: #555;
         }
+        
+        .card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
         .info-card {
             text-align: center;
-            background: linear-gradient(to bottom right, #ffffff, #dff9fb);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            color: #333;
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            transition: var(--transition);
+            border-left: 5px solid var(--warning-color);
         }
+        
+        .info-card:hover {
+            transform: scale(1.02);
+        }
+        
         .info-card h3 {
-            font-size: 18px;
-            color: #74b9ff;
+            font-size: 20px;
+            color: var(--warning-color);
+            margin-bottom: 15px;
         }
-
+        
+        .info-card p {
+            color: #555;
+        }
+        
         .chart-container {
-            margin-top: 20px;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            position: relative;
         }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        
+        .chart-actions select {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+        }
+        
         @media (max-width: 768px) {
             .home-section {
                 left: 0;
                 width: 100%;
+                padding: 15px;
             }
+            
             .card-container {
-                flex-direction: column;
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                font-size: 22px;
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
     <div class="home-section">
-        <div class="header">Admin Dashboard</div>
+        <div class="header">
+            Dashboard Admin
+        </div>
+        
         <div class="card-container">
             <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-user-graduate"></i>
+                </div>
                 <h3>Statistik Siswa</h3>
-                <p>Jumlah Siswa: <?php echo $total_siswa['total_siswa']; ?></p>
+                <div class="value"><?php echo $total_siswa['total_siswa']; ?></div>
+                <p>Total siswa yang terdaftar</p>
             </div>
+            
             <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-school"></i>
+                </div>
                 <h3>Statistik Kelas</h3>
-                <p>Jumlah Kelas: <?php echo $total_kelas['total_kelas']; ?></p>
+                <div class="value"><?php echo $total_kelas['total_kelas']; ?></div>
+                <p>Total kelas yang tersedia</p>
             </div>
+            
             <div class="card">
+                <div class="card-icon">
+                    <i class="fas fa-wallet"></i>
+                </div>
                 <h3>Keuangan</h3>
-                <p>Total Saldo Keseluruhan: Rp <?php echo number_format($total_saldo['total_saldo'], 0, ',', '.'); ?></p>
+                <div class="value">Rp <?php echo number_format($total_saldo['total_saldo'], 0, ',', '.'); ?></div>
+                <p>Total saldo keseluruhan</p>
             </div>
         </div>
-        <br>
+        
         <div class="info-card">
-            <h3>Informasi Tambahan</h3>
-            <p>Pastikan semua data siswa dan kelas telah diperbarui.</p>
+            <h3><i class="fas fa-info-circle"></i> Informasi Penting</h3>
+            <p>Pastikan semua data siswa dan kelas telah diperbarui. Pembaruan terakhir mempengaruhi laporan keuangan.</p>
         </div>
+        
         <div class="chart-container">
+            <div class="chart-header">
+                <div class="chart-title">Grafik Transaksi Bulanan</div>
+                <div class="chart-actions">
+                    <select id="chartType" onchange="updateChartType()">
+                        <option value="line">Line Chart</option>
+                        <option value="bar">Bar Chart</option>
+                    </select>
+                </div>
+            </div>
             <canvas id="tabunganChart"></canvas>
         </div>
     </div>
+    
     <script>
     // Data untuk grafik
     const labels = <?php echo json_encode(array_column($tabungan_per_bulan, 'bulan')); ?>;
     const totalTabungan = <?php echo json_encode(array_column($tabungan_per_bulan, 'total_tabungan')); ?>;
     const totalPenarikan = <?php echo json_encode(array_column($tabungan_per_bulan, 'total_penarikan')); ?>;
 
-    const data = {
-        labels: labels,
-        datasets: [
-            {
-                label: 'Total Setoran',
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                data: totalTabungan,
-                fill: false,
-            },
-            {
-                label: 'Total Penarikan',
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                data: totalPenarikan,
-                fill: false,
-            }
-        ]
-    };
+    let tabunganChart;
 
-    // Konfigurasi untuk grafik
-    const config = {
-        type: 'line',
-        data: data,
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Bulan'
+    function initChart(type = 'line') {
+        const data = {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Total Setoran',
+                    backgroundColor: 'rgba(67, 97, 238, 0.2)',
+                    borderColor: 'rgba(67, 97, 238, 1)',
+                    data: totalTabungan,
+                    fill: type === 'line' ? true : false,
+                    tension: 0.4
+                },
+                {
+                    label: 'Total Penarikan',
+                    backgroundColor: 'rgba(76, 201, 240, 0.2)',
+                    borderColor: 'rgba(76, 201, 240, 1)',
+                    data: totalPenarikan,
+                    fill: type === 'line' ? true : false,
+                    tension: 0.4
+                }
+            ]
+        };
+
+        // Konfigurasi untuk grafik
+        const config = {
+            type: type,
+            data: data,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: {
+                                family: "'Poppins', sans-serif",
+                                size: 12
+                            },
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                        titleColor: '#212529',
+                        bodyColor: '#212529',
+                        bodyFont: {
+                            family: "'Poppins', sans-serif"
+                        },
+                        titleFont: {
+                            family: "'Poppins', sans-serif",
+                            weight: 'bold'
+                        },
+                        borderColor: '#ddd',
+                        borderWidth: 1,
+                        padding: 15,
+                        caretSize: 7,
+                        displayColors: true,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(context.parsed.y);
+                                }
+                                return label;
+                            }
+                        }
                     }
                 },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Total Nominal (Rp)'
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Bulan',
+                            font: {
+                                family: "'Poppins', sans-serif",
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            display: false
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Total Nominal (Rp)',
+                            font: {
+                                family: "'Poppins', sans-serif",
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumSignificantDigits: 3 }).format(value);
+                            }
+                        }
                     }
+                },
+                animation: {
+                    duration: 1000,
+                    easing: 'easeOutQuart'
                 }
             }
-        }
-    };
+        };
 
-    // Inisialisasi grafik
-    const tabunganChart = new Chart(
-        document.getElementById('tabunganChart'),
-        config
-    );
+        // Inisialisasi grafik
+        if (tabunganChart) {
+            tabunganChart.destroy();
+        }
+        
+        tabunganChart = new Chart(
+            document.getElementById('tabunganChart'),
+            config
+        );
+    }
+
+    function updateChartType() {
+        const chartType = document.getElementById('chartType').value;
+        initChart(chartType);
+    }
+
+    // Inisialisasi grafik saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', function() {
+        initChart('line');
+    });
+
+    // SweetAlert welcome message
+    Swal.fire({
+        title: 'Selamat datang, <?php echo $username; ?>!',
+        text: 'Anda berhasil login sebagai admin.',
+        icon: 'success',
+        confirmButtonText: 'Mulai',
+        confirmButtonColor: '#4361ee',
+        showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+        },
+        hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+        }
+    });
 </script>
 
 </body>

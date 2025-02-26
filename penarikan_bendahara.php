@@ -59,69 +59,164 @@ ob_end_flush();
     <title>Penarikan Bendahara</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #f0f2f5;
-            color: #2d3436;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-left: 80px; /* Sesuaikan dengan lebar sidebar */
-            transition: margin-left 0.3s ease; /* Animasi jika sidebar bisa dibuka/tutup */
-        }
+    :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --success: #2ecc71;
+        --danger: #e74c3c;
+        --background: #f8fafc;
+        --card-bg: rgba(255, 255, 255, 0.95);
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border: rgba(148, 163, 184, 0.1);
+        --gradient: linear-gradient(135deg, #4361ee, #3f37c9);
+    }
 
-        /* Jika sidebar bisa dibuka dan lebih lebar, tambahkan kelas tambahan */
-        .sidebar.open ~ .container {
-            margin-left: 250px; /* Sesuaikan dengan lebar sidebar saat terbuka */
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--background);
+        background-image: 
+            radial-gradient(at 40% 20%, rgba(67, 97, 238, 0.1) 0px, transparent 50%),
+            radial-gradient(at 80% 0%, rgba(76, 201, 240, 0.1) 0px, transparent 50%),
+            radial-gradient(at 0% 50%, rgba(67, 97, 238, 0.1) 0px, transparent 50%);
+        margin: 0;
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        margin-left: 90px;
+        padding: 2rem;
+        background: var(--card-bg);
+        border-radius: 24px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .sidebar.open ~ .container {
+        margin-left: 280px;
+    }
+
+    h1, h2 {
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+    }
+
+    h1 {
+        font-size: 2rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 2rem;
+    }
+
+    th {
+        background: rgba(67, 97, 238, 0.05);
+        color: var(--primary);
+        font-weight: 600;
+        padding: 1.25rem 1rem;
+        text-align: left;
+        font-size: 0.95rem;
+        border-bottom: 2px solid rgba(67, 97, 238, 0.1);
+    }
+
+    td {
+        padding: 1.25rem 1rem;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border);
+        font-size: 0.95rem;
+    }
+
+    tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    tbody tr:hover {
+        background: rgba(67, 97, 238, 0.02);
+        transform: translateX(5px);
+    }
+
+    .btn {
+        padding: 0.75rem 1.25rem;
+        border: none;
+        color: white;
+        cursor: pointer;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0 0.25rem;
+    }
+
+    .btn-approve {
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
+    }
+
+    .btn-approve:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+    }
+
+    .btn-reject {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+    }
+
+    .btn-reject:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+    }
+
+    @keyframes fadeIn {
+        from { 
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            margin: 1rem;
+            padding: 1rem;
         }
 
         table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+            display: block;
+            overflow-x: auto;
         }
-        th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
+
+        td, th {
+            white-space: nowrap;
         }
-        th {
-            background: #0984e3;
-            color: #fff;
+    }
+
+    .home-section {
+        position: relative;
+        min-height: 100vh;
+        width: calc(100% - 78px);
+        left: 78px;
+        transition: all 0.3s ease;
         }
-        tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-        .btn {
-            padding: 8px 12px;
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        .btn-approve {
-            background: #00b894;
-        }
-        .btn-approve:hover {
-            background: #55efc4;
-        }
-        .btn-reject {
-            background: #d63031;
-        }
-        .btn-reject:hover {
-            background: #ff7675;
-        }
-    </style>
-</head>
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <body>
+    <div class="home-section">
     <div class="container">
         <h1>Penarikan Bendahara</h1>
         <h2>Daftar Penarikan yang Menunggu Persetujuan</h2>
@@ -155,6 +250,7 @@ ob_end_flush();
                 <?php endforeach; ?>
             </tbody>
         </table>
+    </div>
     </div>
     <script>
         <?= $notif; ?>

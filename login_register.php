@@ -13,145 +13,224 @@ try {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login & Register - Tabungan Siswa</title>
+    <title>Login - Tabungan Siswa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* General Styling */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6B73FF 0%, #000DFF 100%);
+            --secondary-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            --text-color: #fff;
+            --input-bg: rgba(255, 255, 255, 0.08);
+            --input-text: #fff;
+            --button-hover: #4C51FF;
+            --error-color: #ff4757;
+            --success-color: #2ed573;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-gradient);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            color: #fff;
+            color: var(--text-color);
+            position: relative;
+            overflow: hidden;
         }
+
+        /* Animated Background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #6B73FF, #000DFF);
+            opacity: 0.8;
+            z-index: -1;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             width: 100%;
+            max-width: 440px;
+            padding: 20px;
+            position: relative;
         }
+
         .logo {
-            margin-bottom: 20px;
-        }
-        .logo img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-        }
-        .form-box {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
             text-align: center;
+            margin-bottom: 30px;
+            transform: scale(1);
+            transition: transform 0.3s ease;
         }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .logo img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-box {
+            background: var(--secondary-gradient);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .form-box:hover {
+            transform: translateY(-5px);
+        }
+
         .form-box h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+            text-align: center;
+            letter-spacing: 0.5px;
         }
-        .form-box input, .form-box select {
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-box input {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
+            padding: 15px 20px 15px 45px;
             border: none;
-            border-radius: 5px;
-            outline: none;
+            border-radius: 12px;
+            background: var(--input-bg);
+            color: var(--input-text);
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
+        .form-box input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 15px rgba(107, 115, 255, 0.3);
+        }
+
+        .form-box input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
         .form-box button {
             width: 100%;
-            padding: 10px;
-            background: #1e3c72;
+            padding: 15px;
+            background: #fff;
             border: none;
-            border-radius: 5px;
-            color: #fff;
+            border-radius: 12px;
+            color: #000DFF;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
+
         .form-box button:hover {
-            background: #2a5298;
-        }
-        .form-box .toggle-link {
-            margin-top: 10px;
+            background: var(--button-hover);
             color: #fff;
-            cursor: pointer;
-            text-decoration: underline;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+
+            .form-box {
+                padding: 30px 20px;
+            }
+
+            .logo img {
+                width: 100px;
+                height: 100px;
+            }
+
+            .form-box h2 {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="logo">
-            <img src="gambar.png" alt="Logo">
+            <img src="gambar.png" alt="Logo" loading="lazy">
         </div>
 
-        <!-- Form Login -->
         <div class="form-box" id="loginForm">
-            <h2>Login</h2>
+            <h2>Welcome Back</h2>
             <form action="auth_process.php" method="post">
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <button type="submit">Login</button>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" name="email" placeholder="Enter your email" required autocomplete="email">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit">
+                    Sign In <i class="fas fa-arrow-right"></i>
+                </button>
             </form>
-            <div class="toggle-link" onclick="toggleForm()">Belum punya akun? Daftar</div>
-        </div>
-
-        <!-- Form Register -->
-        <div class="form-box" id="registerForm" style="display: none;">
-            <h2>Register</h2>
-            <form action="register_process.php" method="post">
-                <input type="text" name="name" placeholder="Nama" required>
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password" required>
-                
-                <select name="role" id="roleSelect" required onchange="toggleKelasField()">
-                    <option value="">Pilih Role</option>
-                    <option value="siswa">Siswa</option>
-                    <option value="admin">Admin</option>
-                    <option value="bendahara">Bendahara</option>
-                </select>
-                
-                <!-- Dropdown Kelas dari Database -->
-                <select name="kelas_id" id="kelasField" style="display: none;">
-                    <option value="">Pilih Kelas</option>
-                    <?php foreach ($kelasList as $kelas) : ?>
-                        <option value="<?= htmlspecialchars($kelas['id']) ?>">
-                            <?= htmlspecialchars($kelas['nama_kelas']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-
-                <button type="submit">Register</button>
-            </form>
-            <div class="toggle-link" onclick="toggleForm()">Sudah punya akun? Login</div>
         </div>
     </div>
 
     <script>
-        function toggleForm() {
-            document.getElementById("loginForm").style.display = 
-                document.getElementById("loginForm").style.display === "none" ? "block" : "none";
-            document.getElementById("registerForm").style.display = 
-                document.getElementById("registerForm").style.display === "none" ? "block" : "none";
-        }
-
-        function toggleKelasField() {
-            const roleSelect = document.getElementById("roleSelect");
-            const kelasField = document.getElementById("kelasField");
-            kelasField.style.display = roleSelect.value === "siswa" ? "block" : "none";
-        }
+        // Add loading state to button
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const button = this.querySelector('button');
+            button.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Signing In...';
+            button.disabled = true;
+        });
     </script>
 </body>
 </html>

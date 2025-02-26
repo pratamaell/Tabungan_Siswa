@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Feb 10, 2025 at 01:28 AM
+-- Generation Time: Feb 24, 2025 at 06:10 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -39,7 +39,8 @@ CREATE TABLE `kelas` (
 --
 
 INSERT INTO `kelas` (`id`, `nama_kelas`, `created_at`, `updated_at`) VALUES
-(1, 'rpl 1', '2025-01-24 11:30:55', '2025-01-24 11:30:55');
+(1, 'rpl 1', '2025-01-24 11:30:55', '2025-01-24 11:30:55'),
+(2, 'titl2', '2025-02-18 04:52:36', '2025-02-18 04:52:36');
 
 -- --------------------------------------------------------
 
@@ -54,7 +55,7 @@ CREATE TABLE `penarikan` (
   `tanggal` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `status` enum('pending','approved','rejected') COLLATE utf8mb4_general_ci DEFAULT 'pending',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `nomor` varchar(255) COLLATE utf8mb4_general_ci NOT NULL
+  `nomor` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -62,7 +63,30 @@ CREATE TABLE `penarikan` (
 --
 
 INSERT INTO `penarikan` (`id`, `siswa_id`, `nominal`, `tanggal`, `status`, `created_at`, `nomor`) VALUES
-(3, 1, '5000.00', '2025-02-03 01:48:07', 'approved', '2025-02-03 01:51:15', '');
+(7, 1, '5000.00', '2025-02-10 02:52:01', 'approved', '2025-02-10 02:52:01', 'TRX67a969d17609a'),
+(8, 2, '2000.00', '2025-02-10 03:15:58', 'approved', '2025-02-10 03:15:58', 'TRX67a96f6e0bfb2'),
+(9, 2, '2000.00', '2025-02-10 03:18:12', 'rejected', '2025-02-10 03:18:12', 'TRX67a96ff499586'),
+(10, 2, '2000.00', '2025-02-10 03:20:25', 'approved', '2025-02-10 03:20:25', 'TRX67a9707995e79'),
+(11, 2, '1000.00', '2025-02-10 03:36:26', 'approved', '2025-02-10 03:36:26', 'TRX67a9743a8903c'),
+(12, 2, '1000.00', '2025-02-10 03:39:18', 'approved', '2025-02-10 03:39:18', 'TRX67a974e6de060'),
+(13, 1, '5000.00', '2025-02-10 03:40:18', 'approved', '2025-02-10 03:40:18', 'TRX67a9752218070'),
+(14, 1, '1000.00', '2025-02-10 03:42:12', 'approved', '2025-02-10 03:42:12', 'TRX67a975945cd5a'),
+(15, 1, '1000.00', '2025-02-10 03:42:37', 'approved', '2025-02-10 03:42:37', 'TRX67a975ad36e7b'),
+(16, 1, '1000.00', '2025-02-10 03:44:10', 'approved', '2025-02-10 03:44:10', 'TRX67a9760a681f6'),
+(17, 1, '1000.00', '2025-02-10 03:49:20', 'approved', '2025-02-10 03:49:20', 'TRX67a9774001488'),
+(18, 1, '1000.00', '2025-02-10 03:50:18', 'approved', '2025-02-10 03:50:18', 'TRX67a9777a74b0f'),
+(19, 1, '1000.00', '2025-02-10 03:52:42', 'approved', '2025-02-10 03:52:42', 'TRX67a9780a2ef2d'),
+(20, 1, '1000.00', '2025-02-10 03:53:42', 'approved', '2025-02-10 03:53:42', 'TRX67a97846b8d97'),
+(21, 1, '1000.00', '2025-02-10 03:57:02', 'approved', '2025-02-10 03:57:02', 'TRX67a9790e31204'),
+(22, 1, '1000.00', '2025-02-10 03:59:02', 'approved', '2025-02-10 03:59:02', 'TRX67a97986b8597'),
+(23, 1, '1000.00', '2025-02-10 03:59:50', 'approved', '2025-02-10 03:59:50', 'TRX67a979b66dd96'),
+(24, 1, '2000.00', '2025-02-10 04:02:00', 'approved', '2025-02-10 04:02:00', 'TRX67a97a3845ff5'),
+(25, 1, '2000.00', '2025-02-10 06:25:24', 'approved', '2025-02-10 06:25:24', 'TRX67a99bd4deabe'),
+(26, 1, '1000.00', '2025-02-10 06:26:07', 'approved', '2025-02-10 06:26:07', 'TRX67a99bff269ed'),
+(27, 2, '1000.00', '2025-02-11 04:51:16', 'approved', '2025-02-11 04:51:16', 'TRX67aad744f179b'),
+(28, 2, '1000.00', '2025-02-11 06:07:14', 'approved', '2025-02-11 06:07:14', 'TRX67aae912b8319'),
+(29, 2, '2000.00', '2025-02-11 07:05:02', 'rejected', '2025-02-11 07:05:02', 'TRX67aaf69eb9a8b'),
+(30, 2, '2000.00', '2025-02-18 04:08:03', 'approved', '2025-02-18 04:08:03', 'TRX67b407a32c44f');
 
 -- --------------------------------------------------------
 
@@ -83,7 +107,7 @@ CREATE TABLE `pengeluaran` (
 --
 
 INSERT INTO `pengeluaran` (`id`, `tanggal`, `nominal`, `keterangan`, `created_at`) VALUES
-(1, '2025-02-07', '40000.00', 'buat bayar sakit', '2025-02-07 07:02:37');
+(2, '2025-02-18', '2000.00', 'beli permen', '2025-02-18 04:23:47');
 
 -- --------------------------------------------------------
 
@@ -105,8 +129,9 @@ CREATE TABLE `siswa` (
 --
 
 INSERT INTO `siswa` (`id`, `user_id`, `kelas_id`, `saldo`, `created_at`, `updated_at`) VALUES
-(1, 4, 1, '32000.00', '2025-01-24 11:31:14', '2025-02-07 04:03:47'),
-(2, 5, 1, '497000.00', '2025-02-07 01:37:21', '2025-02-07 04:09:35');
+(1, 4, 1, '33000.00', '2025-01-24 11:31:14', '2025-02-18 04:26:40'),
+(2, 5, 1, '12000.00', '2025-02-07 01:37:21', '2025-02-18 04:10:48'),
+(3, 6, 2, '30000.00', '2025-02-24 03:35:11', '2025-02-24 03:46:22');
 
 -- --------------------------------------------------------
 
@@ -131,17 +156,11 @@ CREATE TABLE `transaksi` (
 --
 
 INSERT INTO `transaksi` (`id`, `siswa_id`, `nomor`, `nominal`, `jenis`, `tanggal`, `keterangan`, `created_at`, `updated_at`) VALUES
-(25, 1, 'TRX-1737811971', '1000.00', 'setoran', '2025-01-25 20:32:00', 'hjjhj', '2025-01-25 13:33:02', '2025-01-25 13:33:02'),
-(27, 1, 'TRX-1738553292', '20000.00', 'setoran', '2025-02-03 10:28:00', 'bayar kas februari', '2025-02-03 03:28:44', '2025-02-03 03:28:44'),
-(28, 1, 'TRX-1738898808', '2000.00', 'setoran', '2025-02-07 10:26:00', 'bayar kas bulan juli', '2025-02-07 03:27:09', '2025-02-07 03:27:09'),
-(29, 1, 'TRX-1738900198-341', '2000.00', 'setoran', '2025-02-07 10:50:00', 'byar kassss', '2025-02-07 03:50:13', '2025-02-07 03:50:13'),
 (30, 2, 'TRX-1738900307-583', '12000.00', 'setoran', '2025-02-07 10:51:00', 'bayar kas', '2025-02-07 03:52:02', '2025-02-07 03:52:02'),
-(31, 2, 'TRX-1738900307-583', '120000.00', 'setoran', '2025-02-07 10:51:00', 'bayar kas', '2025-02-07 03:54:27', '2025-02-07 03:54:27'),
-(32, 2, 'TRX-1738900307-583', '120000.00', 'setoran', '2025-02-07 10:51:00', 'bayar kas', '2025-02-07 03:56:24', '2025-02-07 03:56:24'),
-(33, 2, 'TRX-1738900307-583', '120000.00', 'setoran', '2025-02-07 10:51:00', 'bayar kas', '2025-02-07 03:58:42', '2025-02-07 03:58:42'),
-(34, 1, 'TRX-1738901016', '12000.00', 'setoran', '2025-02-07 11:03:00', 'bayar kas', '2025-02-07 04:03:47', '2025-02-07 04:03:47'),
-(35, 2, 'TRX-1738901047', '120000.00', 'setoran', '2025-02-07 11:04:00', 'ajhajakka', '2025-02-07 04:04:18', '2025-02-07 04:04:18'),
-(36, 2, 'TRX-1738901362', '5000.00', 'setoran', '2025-02-07 11:09:00', 'sssksjjkjs', '2025-02-07 04:09:35', '2025-02-07 04:09:35');
+(37, 1, 'TRX-1739154365', '30000.00', 'setoran', '2025-02-10 09:26:00', 'bayar kas', '2025-02-10 02:26:19', '2025-02-10 02:26:19'),
+(38, 2, 'TRX-1739255717', '10000.00', 'setoran', '2025-02-11 13:35:00', 'bayar kas bulan Februari', '2025-02-11 06:35:38', '2025-02-11 06:35:38'),
+(39, 1, 'TRX-1739852783', '30000.00', 'setoran', '2025-02-18 11:26:00', 'bayar kas', '2025-02-18 04:26:40', '2025-02-18 04:26:40'),
+(40, 3, 'TRX-1740368769', '30000.00', 'setoran', '2025-02-24 10:46:00', 'jhhjhkhk', '2025-02-24 03:46:22', '2025-02-24 03:46:22');
 
 -- --------------------------------------------------------
 
@@ -155,6 +174,7 @@ CREATE TABLE `users` (
   `email` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `password` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `role` enum('admin','bendahara','siswa') COLLATE utf8mb4_general_ci NOT NULL,
+  `kelas_id` int DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -163,12 +183,12 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `created_at`, `updated_at`) VALUES
-(1, 'pratama', 'hjhj@gmail.com', '$2y$10$pSnEYl3v3QPpamm0KSX96ufpOdsr1bqI1TgtPUT9XCtdvHDGEzha2', 'admin', '2025-01-24 03:37:50', '2025-01-24 03:37:50'),
-(2, 'pratama', 'tama@gmail.com', '$2y$10$pEboQqVeWutVYcoC0.Domu8ipReZ2YcUO0xoXteJ6/7GdC2Dka5JC', 'bendahara', '2025-01-24 04:20:39', '2025-01-24 04:20:39'),
-(3, 'putri', 'putri@gmail.com', '$2y$10$lljHCm4GGDjcVvzb5geaW.qiwuhbH3M8Djz5IuWPbNezkxphyby0G', 'bendahara', '2025-01-24 06:02:19', '2025-01-24 06:02:19'),
-(4, 'fahri', 'al@gmail.com', '$2y$10$OJiHuH98RidZGZnSiNe9y.g353s/tF4DyWSSLiu8R2wjmBtAmiquq', 'siswa', '2025-01-24 11:30:10', '2025-01-27 10:04:15'),
-(5, 'karim', 'karim@gmail.com', '$2y$10$X8DkahKrqwqlwKoLuXmvP.gEoGIpB.9TwY4XjG2dLzcIT4adlpwlu', 'siswa', '2025-02-07 01:37:21', '2025-02-07 01:37:21');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `kelas_id`, `created_at`, `updated_at`) VALUES
+(1, 'Bambang', 'hjhj@gmail.com', '$2y$10$pSnEYl3v3QPpamm0KSX96ufpOdsr1bqI1TgtPUT9XCtdvHDGEzha2', 'admin', 1, '2025-01-24 03:37:50', '2025-02-24 06:01:46'),
+(3, 'putri', 'putri@gmail.com', '$2y$10$lljHCm4GGDjcVvzb5geaW.qiwuhbH3M8Djz5IuWPbNezkxphyby0G', 'bendahara', 1, '2025-01-24 06:02:19', '2025-02-24 06:05:55'),
+(4, 'fahri', 'al@gmail.com', '$2y$10$OJiHuH98RidZGZnSiNe9y.g353s/tF4DyWSSLiu8R2wjmBtAmiquq', 'siswa', NULL, '2025-01-24 11:30:10', '2025-01-27 10:04:15'),
+(5, 'putra', 'karim@gmail.com', '$2y$10$X8DkahKrqwqlwKoLuXmvP.gEoGIpB.9TwY4XjG2dLzcIT4adlpwlu', 'siswa', NULL, '2025-02-07 01:37:21', '2025-02-11 06:58:51'),
+(6, 'kurniawan', 'kurniawan@gmail.com', '$2y$10$QVTuXIKtjshxY5d/cY3ZJepmjSLa6PhCa9sj0fGQcCSGerzE/IgbW', 'admin', 2, '2025-02-24 03:35:11', '2025-02-24 06:08:09');
 
 --
 -- Indexes for dumped tables
@@ -213,7 +233,8 @@ ALTER TABLE `transaksi`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `fk_users_kelas` (`kelas_id`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -223,37 +244,37 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `kelas`
 --
 ALTER TABLE `kelas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `penarikan`
 --
 ALTER TABLE `penarikan`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `pengeluaran`
 --
 ALTER TABLE `pengeluaran`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `siswa`
 --
 ALTER TABLE `siswa`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `transaksi`
 --
 ALTER TABLE `transaksi`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
@@ -277,6 +298,12 @@ ALTER TABLE `siswa`
 --
 ALTER TABLE `transaksi`
   ADD CONSTRAINT `transaksi_ibfk_1` FOREIGN KEY (`siswa_id`) REFERENCES `siswa` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `fk_users_kelas` FOREIGN KEY (`kelas_id`) REFERENCES `kelas` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

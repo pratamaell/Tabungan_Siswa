@@ -95,85 +95,212 @@ $showReminder = ($today == '12'); // Jika tanggal 10, tampilkan pengingat
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg,rgb(175, 173, 189),rgb(65, 60, 123));
-            color: #fff;
-            padding-top: 80px;
-        }
+    :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --accent: #4cc9f0;
+        --success: #2ecc71;
+        --warning: #f1c40f;
+        --danger: #e74c3c;
+        --dark: #2d3436;
+        --light: #f8fafc;
+        --gradient: linear-gradient(135deg, #4361ee, #3f37c9);
+    }
 
+    body {
+        margin: 0;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: #f4f7fe;
+        color: var(--dark);
+        padding-top: 80px;
+        background-image: 
+            radial-gradient(at 40% 20%, rgba(67, 97, 238, 0.1) 0px, transparent 50%),
+            radial-gradient(at 80% 0%, rgba(76, 201, 240, 0.1) 0px, transparent 50%),
+            radial-gradient(at 0% 50%, rgba(67, 97, 238, 0.1) 0px, transparent 50%);
+    }
+
+    .main-content {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-left: 250px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .header {
+        background: white;
+        padding: 2rem;
+        border-radius: 20px;
+        color: var(--dark);
+        width: 100%;
+        max-width: 1000px;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .header h3 {
+        margin: 0;
+        font-size: 1.8rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .header p {
+        color: #64748b;
+        margin-top: 0.5rem;
+    }
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        width: 100%;
+        max-width: 1000px;
+    }
+
+    .card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(10px);
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card h3 {
+        color: #1e293b;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .card h4 {
+        font-size: 1.8rem;
+        color: var(--primary);
+        margin: 0.5rem 0;
+    }
+
+    .card p {
+        color: #64748b;
+        margin: 0.5rem 0;
+    }
+
+    .card b {
+        color: var(--primary);
+        font-size: 1.4rem;
+    }
+
+    .riwayat {
+        grid-column: 1 / -1;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 1rem;
+    }
+
+    .table th, .table td {
+        padding: 1rem;
+        text-align: left;
+        border: none;
+    }
+
+    .table th {
+        background: rgba(67, 97, 238, 0.05);
+        color: var(--primary);
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .table tr:first-child th:first-child {
+        border-top-left-radius: 10px;
+    }
+
+    .table tr:first-child th:last-child {
+        border-top-right-radius: 10px;
+    }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+        background: rgba(67, 97, 238, 0.02);
+    }
+
+    .table td {
+        color: #64748b;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* Sweet Alert Customization */
+    .swal2-popup {
+        border-radius: 20px;
+        padding: 2rem;
+    }
+
+    .swal2-title {
+        color: var(--dark) !important;
+        font-size: 1.5rem !important;
+    }
+
+    .swal2-content {
+        color: #64748b !important;
+    }
+
+    .swal2-confirm {
+        background: var(--gradient) !important;
+        border-radius: 10px !important;
+        padding: 1rem 2rem !important;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
         .main-content {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            margin-left: 250px;
-            transition: margin-left 0.3s ease;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                margin-left: 0;
-            }
+            margin-left: 0;
+            padding: 1rem;
         }
 
         .header {
-            background: #fdcb6e;
-            padding: 20px;
-            border-radius: 10px;
-            color: #2d3436;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 900px;
+            padding: 1.5rem;
         }
 
         .cards {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            width: 100%;
-            max-width: 900px;
-        }
-
-        .card {
-            background: rgb(64, 55, 135);
-            color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            text-align: left;
-            flex: 1;
-            min-width: 280px;
+            grid-template-columns: 1fr;
         }
 
         .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            color: rgb(226, 228, 229);
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
         }
+    }
 
-        .table th, .table td {
-            border: 1px solid #fff;
-            padding: 10px;
-            text-align: left;
-        }
+    /* Animation */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-        .table th {
-            background: rgb(88, 83, 164);
-        }
+    .header, .card {
+        animation: fadeIn 0.5s ease-out forwards;
+    }
 
-        @media (max-width: 768px) {
-            .cards {
-                flex-direction: column;
-            }
-        }
-    </style>
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+</style>
 </head>
 <body>
     <div class="main-content">

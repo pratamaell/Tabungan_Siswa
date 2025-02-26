@@ -107,115 +107,212 @@ $total_pages = ceil($total_data / $limit);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Riwayat Transaksi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-            body {
-                font-family: 'Roboto', sans-serif;
-                background: linear-gradient(135deg,rgb(175, 173, 189),rgb(65, 60, 123));
-                margin: 0;
-                padding: 0;
-                display: flex;
-                justify-content: flex-start; /* Membuat layout sidebar dengan konten lebih terpisah */
-            }
+    :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --accent: #4cc9f0;
+        --background: #f8fafc;
+        --card-bg: rgba(255, 255, 255, 0.95);
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border: rgba(148, 163, 184, 0.1);
+        --gradient: linear-gradient(135deg, #4361ee, #3f37c9);
+    }
 
-            .container {
-                width: 80%;
-                max-width: 800px;
-                margin: 20px auto;
-                margin-top: 80px;
-                padding: 20px;
-                background:rgb(64, 55, 135);
-                border-radius: 8px;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-                margin-left: 350px; /* Memberikan margin kiri agar konten tidak bertabrakan dengan sidebar */
-            }
+    body {
+        margin: 0;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: var(--background);
+        background-image: 
+            radial-gradient(at 40% 20%, rgba(67, 97, 238, 0.1) 0px, transparent 50%),
+            radial-gradient(at 80% 0%, rgba(76, 201, 240, 0.1) 0px, transparent 50%),
+            radial-gradient(at 0% 50%, rgba(67, 97, 238, 0.1) 0px, transparent 50%);
+    }
 
-            h1 {
-                text-align: center;
-                color: #ffff;
-                margin-bottom: 20px;
-            }
+    .container {
+        width: 90%;
+        max-width: 900px;
+        margin: 2rem auto;
+        margin-left: 300px;
+        padding: 2rem;
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+        border: 1px solid var(--border);
+        animation: fadeIn 0.5s ease-out;
+    }
 
-            .filter-form {
-                margin-bottom: 20px;
-            }
+    h1 {
+        color: var(--text-primary);
+        font-size: 2rem;
+        text-align: center;
+        margin-bottom: 2rem;
+        background: var(--gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 
-            .filter-form input, .filter-form select {
-                padding: 10px;
-                margin-right: 10px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-            }
+    .filter-form {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: rgba(67, 97, 238, 0.05);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+    }
 
-            .filter-form button {
-                padding: 10px 20px;
-                background-color: #007bff;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-            }
+    .filter-form input,
+    .filter-form select {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--text-primary);
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
 
-            .filter-form button:hover {
-                background-color: #0056b3;
-            }
+    .filter-form input:focus,
+    .filter-form select:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
 
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
-            }
+    .filter-form button {
+        padding: 0.75rem 1.5rem;
+        background: var(--gradient);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
 
-            table, th, td {
-                border: 1px solid #ddd;
-            }
+    .filter-form button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+    }
 
-            th, td {
-                padding: 10px;
-                text-align: left;
-            }
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 1rem;
+    }
 
-            th {
-                background-color: #007bff;
-                color: white;
-            }
+    th {
+        background: rgba(67, 97, 238, 0.05);
+        color: var(--primary);
+        font-weight: 600;
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 2px solid rgba(67, 97, 238, 0.1);
+    }
 
-            tbody tr:nth-child(odd) {
-                background-color:rgb(55, 86, 122);
-                color: white;
-            }
+    td {
+        padding: 1rem;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border);
+    }
 
-            tbody tr:nth-child(even) {
-                background-color:rgb(61, 155, 154);
-                color: white;
-            }
+    tbody tr {
+        transition: all 0.3s ease;
+    }
 
-            tbody tr:hover {
-                background-color:rgb(156, 157, 158);
-            }
+    tbody tr:hover {
+        background: rgba(67, 97, 238, 0.02);
+        transform: translateX(5px);
+    }
 
-            .pagination {
-                text-align: center;
-                margin-top: 20px;
-            }
+    .pagination {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
 
-            .pagination a {
-                padding: 10px 15px;
-                margin: 0 5px;
-                background-color: #007bff;
-                color: white;
-                text-decoration: none;
-                border-radius: 4px;
-            }
+    .pagination a {
+        padding: 0.5rem 1rem;
+        background: white;
+        color: var(--text-primary);
+        text-decoration: none;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        transition: all 0.3s ease;
+    }
 
-            .pagination a:hover {
-                background-color: #0056b3;
-            }
+    .pagination a:hover {
+        background: var(--gradient);
+        color: white;
+        transform: translateY(-2px);
+    }
 
-            .pagination .active {
-                background-color: #0056b3;
-            }
+    .pagination .active {
+        background: var(--gradient);
+        color: white;
+    }
 
-    </style>
+    @keyframes fadeIn {
+        from { 
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to { 
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            margin: 1rem;
+            padding: 1rem;
+            width: 95%;
+        }
+
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        table {
+            display: block;
+            overflow-x: auto;
+        }
+
+        th, td {
+            white-space: nowrap;
+        }
+    }
+
+    /* Status badges for transaction types */
+    .status-setoran,
+    .status-penarikan {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .status-setoran {
+        background: rgba(46, 204, 113, 0.1);
+        color: #2ecc71;
+    }
+
+    .status-penarikan {
+        background: rgba(231, 76, 60, 0.1);
+        color: #e74c3c;
+    }
+</style>
 </head>
 <body>
     <div class="container">
@@ -249,7 +346,11 @@ $total_pages = ceil($total_data / $limit);
                             <td><?= htmlspecialchars($trans['tanggal']); ?></td>
                             <td><?= htmlspecialchars($trans['nomor']); ?></td>
                             <td>Rp <?= number_format($trans['nominal'], 2, ',', '.'); ?></td>
-                            <td><?= ucfirst($trans['jenis']); ?></td>
+                            <td>
+                                <span class="status-<?= strtolower($trans['jenis']); ?>">
+                                    <?= ucfirst($trans['jenis']); ?>
+                                </span>
+                            </td>
                             <td><?= htmlspecialchars($trans['keterangan']); ?></td>
                         </tr>
                     <?php endforeach; ?>
@@ -267,5 +368,6 @@ $total_pages = ceil($total_data / $limit);
             <?php endfor; ?>
         </div>
     </div>
+
 </body>
 </html>

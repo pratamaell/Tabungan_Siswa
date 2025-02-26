@@ -277,14 +277,14 @@
           <span class="tooltip">Dashboard</span>
         </li>
         <li>
-          <a href="">
+          <a href="manajemen_siswa.php">
             <i class="bx bx-user"></i>
             <span class="links_name">Kelola Siswa</span>
           </a>
           <span class="tooltip">Kelola Siswa</span>
         </li>
         <li>
-          <a href="#">
+          <a href="manajemen_kelas.php">
           <i class="fa-solid fa-school"></i>
             <span class="links_name">Kelola Kelas</span>
           </a>

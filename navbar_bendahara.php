@@ -260,15 +260,6 @@
                 display: none;
             }
             }
-            .badge {
-              background: red;
-              color: white;
-              border-radius: 50%;
-              padding: 5px 10px;
-              font-size: 12px;
-              margin-left: 5px;
-              display: none; /* Sembunyikan jika tidak ada notifikasi */
-            }
 
 
 
@@ -300,7 +291,6 @@
           <a href="penarikan_bendahara.php">
             <i class="fa-solid fa-money-check"></i>
             <span class="links_name">Penarikan</span>
-            <span class="badge" id="notif_penarikan">0</span> <!-- Tambahkan Badge -->
           </a>
           <span class="tooltip">Penarikan</span>
         </li>
