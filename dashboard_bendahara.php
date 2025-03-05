@@ -666,5 +666,37 @@ $total_pages = ceil($total_records / $limit);
     </div>
 <?php endif; ?>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Selamat datang, <?= htmlspecialchars($bendahara['name']); ?>!',
+            html: `
+                <div>
+                    <p>Anda berhasil login sebagai Bendahara.</p>
+                    <small>Username: <?= htmlspecialchars($bendahara['name']); ?><br>
+                    Waktu Login: ${new Date().toLocaleString('id-ID', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric', 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    })}</small>
+                </div>
+            `,
+            showConfirmButton: false,
+            timer: 10000,
+            toast: true,
+            background: '#f0f0f0',
+            iconColor: '#4361ee',
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+    });
+</script>
 </body>
 </html>

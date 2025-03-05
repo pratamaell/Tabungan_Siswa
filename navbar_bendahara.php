@@ -261,6 +261,34 @@
             }
             }
 
+            ./* Tambahkan atau modifikasi CSS di dalam tag <style> */
+.notification-bubble {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #25D366; /* Warna hijau WhatsApp */
+    color: white;
+    border-radius: 50%;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar.open .notification-bubble {
+    right: 20px;
+}
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
 
 
     </style>
@@ -288,11 +316,12 @@
           <span class="tooltip">Pembayaran</span>
         </li>
         <li>
-          <a href="penarikan_bendahara.php">
-            <i class="fa-solid fa-money-check"></i>
-            <span class="links_name">Penarikan</span>
-          </a>
-          <span class="tooltip">Penarikan</span>
+            <a href="penarikan_bendahara.php" style="position: relative;">
+                <i class='bx bx-wallet'></i>
+                <span class="links_name">Penarikan</span>
+                <span id="notif_penarikan" class="notification-bubble" style="display: none;">0</span>
+            </a>
+            <span class="tooltip">Penarikan</span>
         </li>
         <li>
           <a href="pengeluaran_bendahara.php">
@@ -348,25 +377,36 @@
             }
             }
 
+            // Replace the existing updateNotifPenarikan function
             function updateNotifPenarikan() {
-          fetch("get_notif_penarikan.php")
-            .then(response => response.text())
-            .then(data => {
-              let notifElement = document.getElementById("notif_penarikan");
-              if (parseInt(data) > 0) {
-                notifElement.innerText = data;
-                notifElement.style.display = "inline-block";
-              } else {
-                notifElement.style.display = "none";
-              }
-            })
-            .catch(error => console.error("Error fetching data:", error));
-        }
+    console.log("Fungsi updateNotifPenarikan() dijalankan");
+    fetch("get_notif_penarikan.php")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(data => {
+            const notifElement = document.getElementById("notif_penarikan");
+            const count = parseInt(data);
 
-        // Panggil pertama kali saat halaman dimuat
-        updateNotifPenarikan();
-        // Update setiap 5 detik
-        setInterval(updateNotifPenarikan, 5000);
+            if (count > 0) {
+                notifElement.innerText = count;
+                console.log("Nilai notifElement.innerText:", count); // Tambahkan baris ini
+                notifElement.style.display = "flex";
+                notifElement.title = `${count} penarikan menunggu persetujuan`;
+            } else {
+                notifElement.style.display = "none";
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching notifications:', error);
+        });
+}
+    // Update notifications more frequently (every 15 seconds)
+    updateNotifPenarikan();
+    setInterval(updateNotifPenarikan, 15000);
 
     </script>
   </body>

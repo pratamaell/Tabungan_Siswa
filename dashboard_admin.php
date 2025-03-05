@@ -44,7 +44,14 @@ $stmt_tabungan_per_bulan = $db->prepare($query_tabungan_per_bulan);
 $stmt_tabungan_per_bulan->execute();
 $tabungan_per_bulan = $stmt_tabungan_per_bulan->fetchAll(PDO::FETCH_ASSOC);
 
-$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Admin';
+// Replace the existing username assignment (around line 45) with:
+$query_admin = "SELECT name FROM users WHERE id = ? AND role = 'admin'";
+$stmt_admin = $db->prepare($query_admin);
+$stmt_admin->execute([$_SESSION['user_id']]);
+$admin_data = $stmt_admin->fetch(PDO::FETCH_ASSOC);
+$username = $admin_data['name'] ?? 'Admin';
+
+
 
 $labels = array_column($tabungan_per_bulan, 'bulan');
 $totalTabungan = array_column($tabungan_per_bulan, 'total_tabungan');
@@ -481,19 +488,33 @@ if (empty($labels)) {
     });
 
     // SweetAlert welcome message
-    Swal.fire({
-        title: 'Selamat datang, <?php echo $username; ?>!',
-        text: 'Anda berhasil login sebagai admin.',
-        icon: 'success',
-        confirmButtonText: 'Mulai',
-        confirmButtonColor: '#4361ee',
-        showClass: {
-            popup: 'animate__animated animate__fadeInDown'
-        },
-        hideClass: {
-            popup: 'animate__animated animate__fadeOutUp'
-        }
-    });
+Swal.fire({
+    position: 'top-end',
+    icon: 'success',
+    title: 'Selamat datang, <?php echo $username; ?>!',
+    html: `
+        <div>
+            <p>Anda berhasil login sebagai admin.</p>
+            <small>Username: <?php echo $username; ?><br>
+            Waktu Login: ${new Date().toLocaleString('id-ID', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            })}</small>
+        </div>
+    `,
+    showConfirmButton: false,
+    timer: 10000,
+    toast: true,
+    background: '#f0f0f0',
+    iconColor: '#4361ee',
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+});
 </script>
 
 </body>

@@ -1,16 +1,19 @@
 <?php
-include 'config/database.php'; // Sesuaikan dengan koneksi database PDO
+session_start();
+include 'config/database.php';
+
 
 try {
-    // Query untuk menghitung jumlah penarikan dengan status 'pending'
-    $query = "SELECT COUNT(*) AS jumlah FROM penarikan WHERE status = 'pending'";
-    $stmt = $pdo->prepare($query);
-    $stmt->execute();
+    $database = new Database();
+    $conn = $database->getConnection();
     
-    // Ambil hasil query
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    echo $row['jumlah']; // Output jumlah notifikasi
-} catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    $query = "SELECT COUNT(*) as total FROM penarikan WHERE status = 'pending'";
+    $stmt = $conn->prepare($query);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    echo $result['total'];
+} catch(PDOException $e) {
+    http_response_code(500);
+    echo "0";
 }
-?>

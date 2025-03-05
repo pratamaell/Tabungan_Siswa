@@ -481,69 +481,126 @@ $nama_bulan = [
         }
         
         /* Custom print styles */
-        @media print {
-            body {
-                background: white;
-                padding: 20px;
-                font-size: 12px;
-            }
-            
-            .dashboard-container {
-                padding: 0;
-            }
-            
-            .filter-section,
-            .button-outline,
-            .pagination {
-                display: none;
-            }
-            
-            .card,
-            .stat-card {
-                box-shadow: none;
-                border: 1px solid #eee;
-                page-break-inside: avoid;
-            }
-            
-            .stat-card:hover,
-            .card:hover {
-                transform: none;
-                box-shadow: none;
-            }
-            
-            .page-title {
-                font-size: 22px;
-            }
-            
-            .page-title::after {
-                display: none;
-            }
-            
-            .stats-container {
-                display: flex;
-                flex-wrap: wrap;
-            }
-            
-            .stat-card {
-                flex: 1 1 45%;
-                min-width: 200px;
-                margin: 10px;
-            }
-            
-            table {
-                font-size: 11px;
-            }
-            
-            thead th {
-                background: #f0f0f0 !important;
-                color: black !important;
-            }
-            
-            /* Add page break hints */
-            .page-break-after {
-                page-break-after: always;
-            }
-        }
+        /* Add this CSS in the existing <style> tag */
+
+@media print {
+    body {
+        background: white;
+        padding: 20px;
+        font-size: 12px;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    
+    .dashboard-container {
+        padding: 0;
+        margin-left: 0 !important;
+        max-width: 100%;
+    }
+    
+    .home-section {
+        width: 100% !important;
+        left: 0 !important;
+    }
+    
+    /* Hide unnecessary elements */
+    .filter-section,
+    .button-outline,
+    .pagination,
+    .sidebar,
+    nav {
+        display: none !important;
+    }
+    
+    /* Header styling */
+    .page-header {
+        text-align: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #4361ee;
+        padding-bottom: 15px;
+    }
+    
+    .page-title {
+        color: #4361ee !important;
+        font-size: 24px;
+        margin-bottom: 5px;
+    }
+    
+    .page-subtitle {
+        font-size: 14px;
+        color: #666;
+    }
+    
+    /* Stats cards styling */
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        margin: 20px 0;
+        page-break-inside: avoid;
+    }
+    
+    .stat-card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        background-color: #f8f9fa !important;
+        min-height: auto;
+        page-break-inside: avoid;
+    }
+    
+    .stat-card::before {
+        display: none;
+    }
+    
+    .stat-title {
+        color: #666 !important;
+        font-size: 12px;
+        margin-bottom: 5px;
+    }
+    
+    .stat-value {
+        font-size: 18px;
+        font-weight: bold;
+    }
+    
+    /* Table styling */
+    table {
+        width: 100%;
+        margin-top: 20px;
+        border: 1px solid #ddd;
+    }
+    
+    thead th {
+        background-color: #4361ee !important;
+        color: white !important;
+        padding: 10px;
+        font-size: 12px;
+    }
+    
+    tbody td {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+        font-size: 11px;
+    }
+    
+    /* Footer styling */
+    .print-footer {
+        display: block !important;
+        margin-top: 30px;
+        text-align: right;
+        font-size: 11px;
+        page-break-inside: avoid;
+    }
+    
+    /* Add page numbering */
+    @page {
+        margin: 1cm;
+    }
+    
+    .page-break {
+        page-break-before: always;
+    }
+}
         
         /* Responsive styling */
         @media (max-width: 768px) {
@@ -707,6 +764,11 @@ $nama_bulan = [
             <?php endif; ?>
         </div>
     </div>
+    <!-- Add this before closing card div -->
+<div class="print-footer" style="display: none;">
+    <p>Dicetak pada: <?= date('d/m/Y H:i:s') ?></p>
+    <p>Oleh: <?= $_SESSION['username'] ?? 'Admin' ?></p>
+</div>
     </div>
 </body>
 </html>

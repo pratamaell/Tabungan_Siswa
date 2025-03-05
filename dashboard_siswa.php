@@ -83,7 +83,13 @@ $stmt_penarikan_terakhir->execute();
 $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
 
 $today = date('d'); // Ambil tanggal hari ini
-$showReminder = ($today == '12'); // Jika tanggal 10, tampilkan pengingat
+$showReminder = ($today == '8'); // Jika tanggal 8, tampilkan pengingat
+
+// Check if the welcome alert has been shown
+$showWelcomeAlert = !isset($_SESSION['welcome_alert_shown']);
+if ($showWelcomeAlert) {
+    $_SESSION['welcome_alert_shown'] = true;
+}
 ?>
 
 <!DOCTYPE html>
@@ -355,24 +361,24 @@ $showReminder = ($today == '12'); // Jika tanggal 10, tampilkan pengingat
         </div>
     </div>
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        <?php if ($showReminder): ?>
-            Swal.fire({
-                title: "Pengingat KAS!",
-                text: "Hari ini tanggal 12, jangan lupa untuk bayar KAS ya!",
-                icon: "info",
-                confirmButtonText: "Siap!"
-            });
-        <?php else: ?>
-            Swal.fire({
-                title: "Selamat Datang!",
-                text: "Halo, <?php echo htmlspecialchars($user['name']); ?>! Selamat datang di dashboard siswa.",
-                icon: "success",
-                confirmButtonText: "Terima Kasih!"
-            });
-        <?php endif; ?>
-    });
-</script>
+        document.addEventListener("DOMContentLoaded", function () {
+            <?php if ($showReminder): ?>
+                Swal.fire({
+                    title: "Pengingat KAS!",
+                    text: "Hari ini tanggal 8, jangan lupa untuk bayar KAS ya!",
+                    icon: "info",
+                    confirmButtonText: "Siap!"
+                });
+            <?php elseif ($showWelcomeAlert): ?>
+                Swal.fire({
+                    title: "Selamat Datang!",
+                    text: "Halo, <?php echo htmlspecialchars($user['name']); ?>! Selamat datang di dashboard siswa.",
+                    icon: "success",
+                    confirmButtonText: "Terima Kasih!"
+                });
+            <?php endif; ?>
+        });
+    </script>
 
 </body>
 </html>

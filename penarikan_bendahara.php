@@ -213,6 +213,13 @@ ob_end_flush();
         left: 78px;
         transition: all 0.3s ease;
         }
+
+       
+        /* Add this for sidebar open state */
+        .sidebar.open ~ .home-section {
+            width: calc(100% - 250px);
+            left: 250px;
+        }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <body>

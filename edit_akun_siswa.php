@@ -77,90 +77,265 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Edit Profil</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg,rgb(175, 173, 189),rgb(65, 60, 123));
-            color: #fff;
-            padding-top: 80px;
-        }
+    :root {
+        --primary-color:  #4361ee;
+        --secondary-color: #3f37c9;
+        --background-color: #f8fafc;
+        --text-color: #1e293b;
+        --input-bg: rgba(2, 0, 0, 0.05);
+        --input-border: rgba(66, 64, 64, 0.1);
+        --input-focus:rgb(108, 109, 174);
+        --card-bg: rgba(255, 255, 255, 0.95);
+    }
 
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: var(--background-color);
+        color: var(--text-color);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    .main-content {
+        position: relative;
+        z-index: 2;
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 80px);
+    }
+
+    .form-container {
+        background: var(--card-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        padding: 2.5rem;
+        border-radius: 1.5rem;
+        width: 100%;
+        max-width: 700px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        position: relative;
+        overflow: hidden;
+        margin-left: 240px;
+    }
+
+    .form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    }
+
+    .form-container h3 {
+        color: var(--text-color);
+        font-size: 1.875rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .form-container form {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* Creates 3 columns */
+        gap: 2rem;
+        align-items: start;
+    }
+
+    .form-container label {
+        color: var(--text-color);
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-container input,
+    .form-container select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        border: 1px solid var(--input-border);
+        background: var(--input-bg);
+        color: var(--text-color);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-container input:focus,
+    .form-container select:focus {
+        outline: none;
+        border-color: var(--input-focus);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .form-container .save-button {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1rem;
+        border: none;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+
+    .form-container .save-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+    }
+
+    .form-container .save-button:active {
+        transform: translateY(0);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-container {
+        animation: fadeIn 0.5s ease-out;
+    }
+
+
+    .button-container {
+        grid-column: 1 / -1; /* Spans full width */
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 2rem;
+    }
+
+    .save-button {
+        width: auto; /* Changed from 100% */
+        min-width: 200px;
+        padding: 1rem 2rem;
+    }
+
+
+    @media (max-width: 768px) {
         .main-content {
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
+            padding: 1rem;
         }
 
         .form-container {
-            background: rgb(64, 55, 135);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 500px;
-            margin-top: 20px;
+            padding: 1.5rem;
+            margin: 1rem;
         }
 
         .form-container h3 {
-            margin-bottom: 20px;
-            font-size: 22px;
-            color: rgb(232, 231, 241);
+            font-size: 1.5rem;
         }
 
         .form-container form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            grid-template-columns: 1fr;
         }
 
-        .form-container input,
-        .form-container select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
+        .button-container {
+            justify-content: center;
         }
+    }
 
-        .form-container .save-button {
-            padding: 10px;
-            background: #6c5ce7;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
 
-        .form-container .save-button:hover {
-            background: #a29bfe;
-        }
-    </style>
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--primary-color);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--secondary-color);
+    }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="main-content">
-        <div class="form-container">
-            <h3>Ubah Data</h3>
-            <form method="POST">
-                <label for="nama">Nama:</label>
-                <input type="text" id="nama" name="nama" value="<?php echo htmlspecialchars($profil['nama_siswa']); ?>" required>
-
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($profil['email_siswa']); ?>" required>
-
-                <label for="kelas">Kelas:</label>
-                <select id="kelas" name="kelas" required>
-                    <?php foreach ($kelas_list as $kelas): ?>
-                        <option value="<?php echo $kelas['id']; ?>" <?php echo ($kelas['id'] == $profil['kelas_id']) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($kelas['nama_kelas']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-
-                <button type="submit" class="save-button">Simpan Perubahan</button>
-            </form>
+    <div class="form-container">
+    <h3>Ubah Data</h3>
+    <form method="POST">
+        <div class="form-group">
+            <label for="nama">Nama:</label>
+            <input type="text" id="nama" name="nama" value="<?php echo htmlspecialchars($profil['nama_siswa']); ?>" required>
         </div>
+
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($profil['email_siswa']); ?>" required>
+        </div>
+
+        <div class="form-group">
+            <label for="kelas">Kelas:</label>
+            <select id="kelas" name="kelas" required>
+                <?php foreach ($kelas_list as $kelas): ?>
+                    <option value="<?php echo $kelas['id']; ?>" <?php echo ($kelas['id'] == $profil['kelas_id']) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($kelas['nama_kelas']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <div class="button-container">
+            <button type="submit" class="save-button">Simpan Perubahan</button>
+        </div>
+    </form>
+</div>
     </div>
+    <script>
+    // Add ripple effect to button
+    document.querySelector('.save-button').addEventListener('click', function(e) {
+        let ripple = document.createElement('div');
+        ripple.className = 'ripple';
+        this.appendChild(ripple);
+        
+        let rect = this.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+        
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        
+        setTimeout(() => ripple.remove(), 1000);
+    });
+
+    // Smooth focus transitions
+    const inputs = document.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            input.parentElement.classList.add('focused');
+        });
+        
+        input.addEventListener('blur', () => {
+            input.parentElement.classList.remove('focused');
+        });
+    });
+</script>
 </body>
 </html>

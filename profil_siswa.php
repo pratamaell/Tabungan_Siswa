@@ -16,7 +16,8 @@ $query_profil = "
         u.name AS nama_siswa, 
         u.email AS email_siswa, 
         k.id AS kelas_id,
-        k.nama_kelas
+        k.nama_kelas,
+        CASE WHEN u.password IS NOT NULL THEN '********' END AS password_mask
     FROM siswa s
     INNER JOIN users u ON s.user_id = u.id
     INNER JOIN kelas k ON s.kelas_id = k.id
@@ -192,6 +193,36 @@ $profil = $stmt_profil->fetch(PDO::FETCH_ASSOC);
             transform: none;
         }
     }
+
+    .password-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.change-password-link {
+    padding: 0.5rem 1rem;
+    background: var(--gradient);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.change-password-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+}
+
+@media (max-width: 768px) {
+    .password-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}
 </style>
 </head>
 <body>
@@ -214,6 +245,13 @@ $profil = $stmt_profil->fetch(PDO::FETCH_ASSOC);
                     <div>
                         <span>Kelas:</span>
                         <p><?php echo htmlspecialchars($profil['nama_kelas']); ?></p>
+                    </div>
+                    <div>
+                        <span>Password:</span>
+                        <div class="password-container">
+                            <p><?php echo $profil['password_mask']; ?></p>
+                            <a href="change_password.php" class="change-password-link">Ubah Password</a>
+                        </div>
                     </div>
                 </div>
                 <a href="edit_akun_siswa.php">
