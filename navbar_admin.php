@@ -298,6 +298,13 @@
           <span class="tooltip">Laporan Keuangan</span>
         </li>
         <li>
+          <a href="riwayat_admin.php">
+            <i class="fas fa-history"></i>
+            <span class="links_name">Kelola Transaksi</span>
+          </a>
+          <span class="tooltip">Kelola Transaksi</span>
+        </li>
+        <li>
           <a href="manajemen_akun_pengaturan.php">
             <i class="bx bx-folder"></i>
             <span class="links_name">Akun</span>

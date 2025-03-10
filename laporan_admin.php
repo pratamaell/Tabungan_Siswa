@@ -32,12 +32,13 @@ $stmt_penarikan->execute();
 $total_penarikan = $stmt_penarikan->fetch(PDO::FETCH_ASSOC)['total_penarikan'];
 
 // Ambil total pengeluaran
-$query_pengeluaran = "SELECT IFNULL(SUM(nominal), 0) AS total_pengeluaran FROM pengeluaran WHERE MONTH(tanggal) = :bulan AND YEAR(tanggal) = :tahun";
+$query_pengeluaran = "SELECT SUM(nominal) AS total_pengeluaran FROM pengeluaran WHERE MONTH(tanggal) = :bulan AND YEAR(tanggal) = :tahun";
 $stmt_pengeluaran = $conn->prepare($query_pengeluaran);
-$stmt_pengeluaran->bindValue(':bulan', (int)$bulan, PDO::PARAM_INT);
-$stmt_pengeluaran->bindValue(':tahun', (int)$tahun, PDO::PARAM_INT);
+$stmt_pengeluaran->bindParam(':bulan', $bulan);
+$stmt_pengeluaran->bindParam(':tahun', $tahun);
 $stmt_pengeluaran->execute();
-$total_pengeluaran = $stmt_pengeluaran->fetch(PDO::FETCH_ASSOC)['total_pengeluaran'];
+$result_pengeluaran = $stmt_pengeluaran->fetch(PDO::FETCH_ASSOC);
+$total_pengeluaran = $result_pengeluaran['total_pengeluaran'] ?? 0;
 
 // Hitung saldo akhir
 $saldo_akhir = $total_setoran - $total_penarikan - $total_pengeluaran;

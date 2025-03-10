@@ -83,7 +83,7 @@ $stmt_penarikan_terakhir->execute();
 $penarikan_terakhir = $stmt_penarikan_terakhir->fetch(PDO::FETCH_ASSOC);
 
 $today = date('d'); // Ambil tanggal hari ini
-$showReminder = ($today == '8'); // Jika tanggal 8, tampilkan pengingat
+$showReminder = ($today == '10'); // Jika tanggal 8, tampilkan pengingat
 
 // Check if the welcome alert has been shown
 $showWelcomeAlert = !isset($_SESSION['welcome_alert_shown']);
@@ -365,7 +365,7 @@ if ($showWelcomeAlert) {
             <?php if ($showReminder): ?>
                 Swal.fire({
                     title: "Pengingat KAS!",
-                    text: "Hari ini tanggal 8, jangan lupa untuk bayar KAS ya!",
+                    text: "Hari ini tanggal 10, jangan lupa untuk bayar KAS ya!",
                     icon: "info",
                     confirmButtonText: "Siap!"
                 });

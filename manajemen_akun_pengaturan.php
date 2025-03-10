@@ -1,4 +1,5 @@
 <?php
+ob_start();
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: login_register.php");
@@ -13,54 +14,55 @@ $db = $database->getConnection();
 
 // Tambah atau Edit akun
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id = isset($_POST['id']) ? $_POST['id'] : null;
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $role = $_POST['role'];
-    $kelas_id = $_POST['kelas_id'] ?? null;
+    try {
+        $db->beginTransaction();
+        
+        $id = isset($_POST['id']) ? $_POST['id'] : null;
+        $name = $_POST['name'];
+        $email = $_POST['email'];
+        $role = $_POST['role'];
+        $kelas_id = $_POST['kelas_id'] ?? null;
 
-    if ($id) { // Update akun
-        $query = "UPDATE users SET name=:name, email=:email, role=:role WHERE id=:id";
-        $stmt = $db->prepare($query);
-        $stmt->bindParam(':id', $id);
-    } else { // Tambah akun baru
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        $query = "INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)";
-        $stmt = $db->prepare($query);
-        $stmt->bindParam(':password', $password);
-    }
-
-    $stmt->bindParam(':name', $name);
-    $stmt->bindParam(':email', $email);
-    $stmt->bindParam(':role', $role);
-
-    if ($stmt->execute()) {
-        if (!$id && $role == 'siswa') {
-            $user_id = $db->lastInsertId();
-            $query_siswa = "INSERT INTO siswa (user_id, kelas_id, saldo) VALUES (:user_id, :kelas_id, 0)";
-            $stmt_siswa = $db->prepare($query_siswa);
-            $stmt_siswa->bindParam(':user_id', $user_id);
-            $stmt_siswa->bindParam(':kelas_id', $kelas_id);
-            $stmt_siswa->execute();
+        if ($id) {
+            $query = "UPDATE users SET name=:name, email=:email, role=:role WHERE id=:id";
+            $stmt = $db->prepare($query);
+            $stmt->bindParam(':id', $id);
+        } else {
+            $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+            $query = "INSERT INTO users (name, email, password, role) VALUES (:name, :email, :password, :role)";
+            $stmt = $db->prepare($query);
+            $stmt->bindParam(':password', $password);
         }
-        echo "<script>alert('Akun berhasil disimpan!'); window.location='';</script>";
-    } else {
-        echo "<script>alert('Gagal menyimpan akun!');</script>";
+
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':role', $role);
+
+        if ($stmt->execute()) {
+            if (!$id && $role == 'siswa') {
+                $user_id = $db->lastInsertId();
+                if (!empty($_POST['kelas_id'])) {
+                    $query_siswa = "INSERT INTO siswa (user_id, kelas_id, saldo) VALUES (:user_id, :kelas_id, 0)";
+                    $stmt_siswa = $db->prepare($query_siswa);
+                    $stmt_siswa->bindParam(':user_id', $user_id);
+                    $stmt_siswa->bindParam(':kelas_id', $_POST['kelas_id'], PDO::PARAM_INT);
+                    $stmt_siswa->execute();
+                } else {
+                    throw new Exception("Harap pilih kelas untuk akun siswa!");
+                }
+            }
+            $db->commit();
+            $_SESSION['sukses'] = $id ? "Akun berhasil diperbarui!" : "Akun baru berhasil ditambahkan!";
+        }
+    } catch (Exception $e) {
+        $db->rollBack();
+        $_SESSION['error'] = $e->getMessage();
     }
+    
+    echo "<script>window.location.href = '".$_SERVER['PHP_SELF']."';</script>";
+    exit();
 }
 
-// Hapus akun
-if (isset($_GET['delete'])) {
-    $id = $_GET['delete'];
-    $query = "DELETE FROM users WHERE id=:id";
-    $stmt = $db->prepare($query);
-    $stmt->bindParam(':id', $id);
-    if ($stmt->execute()) {
-        echo "<script>alert('Akun berhasil dihapus!'); window.location='manajemen_akun_pengaturan.php';</script>";
-    } else {
-        echo "<script>alert('Gagal menghapus akun!');</script>";
-    }
-}
 
 // Ambil semua data akun
 $query = "SELECT * FROM users";
@@ -99,6 +101,8 @@ $query_counts = "SELECT role, COUNT(*) as count FROM users GROUP BY role";
 $stmt_counts = $db->prepare($query_counts);
 $stmt_counts->execute();
 $role_counts = array_column($stmt_counts->fetchAll(PDO::FETCH_ASSOC), 'count', 'role');
+
+
 ?>
 
 <!DOCTYPE html>
@@ -111,6 +115,7 @@ $role_counts = array_column($stmt_counts->fetchAll(PDO::FETCH_ASSOC), 'count', '
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -254,7 +259,22 @@ $role_counts = array_column($stmt_counts->fetchAll(PDO::FETCH_ASSOC), 'count', '
         left: 78px;
         transition: all 0.3s ease;
         }
+
+                .colored-toast.swal2-icon-success {
+            background-color: #f0fdf4 !important;
+            border-left: 4px solid #4ade80 !important;
+        }
+
+        .colored-toast.swal2-icon-error {
+            background-color: #fef2f2 !important;
+            border-left: 4px solid #ef4444 !important;
+        }
+
+        .colored-toast {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+        }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="page-bg min-h-screen">
     <div class="home-section">
@@ -453,11 +473,10 @@ $role_counts = array_column($stmt_counts->fetchAll(PDO::FETCH_ASSOC), 'count', '
                                                         toggleKelasField();">
                                             <i class="fas fa-edit mr-1"></i> Edit
                                         </button>
-                                        <a href="?delete=<?= $user['id']; ?>" 
-                                           class="btn-delete text-white px-4 py-2 rounded-lg text-sm" 
-                                           onclick="return confirm('Yakin ingin menghapus akun <?= htmlspecialchars($user['name']) ?>?');">
+                                        <button onclick="confirmDelete(<?= $user['id'] ?>, '<?= htmlspecialchars($user['name']) ?>')"
+                                            class="btn-delete text-white px-4 py-2 rounded-lg text-sm">
                                             <i class="fas fa-trash-alt mr-1"></i> Hapus
-                                        </a>
+                                        </button>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -501,17 +520,21 @@ $role_counts = array_column($stmt_counts->fetchAll(PDO::FETCH_ASSOC), 'count', '
     </div>
 
     <script>
+        // Add this to your existing toggleKelasField function
         function toggleKelasField() {
             const roleSelect = document.getElementById("role");
             const kelasFieldContainer = document.getElementById("kelasFieldContainer");
+            const kelasField = document.getElementById("kelasField");
             
             if (roleSelect.value === "siswa") {
                 kelasFieldContainer.classList.remove("hidden");
+                kelasField.required = true;
             } else {
                 kelasFieldContainer.classList.add("hidden");
+                kelasField.required = false;
+                kelasField.value = ""; // Clear the value when not siswa
             }
         }
-        
         function updateClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -526,6 +549,91 @@ $role_counts = array_column($stmt_counts->fetchAll(PDO::FETCH_ASSOC), 'count', '
         document.addEventListener('DOMContentLoaded', function() {
             updateClock();
         });
+        
+        function confirmDelete(userId, userName) {
+            Swal.fire({
+                title: 'Konfirmasi Hapus',
+                text: `Apakah Anda yakin ingin menghapus akun ${userName}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `delete_akun.php?action=delete&id=${userId}`;
+                }
+            });
+        }
+
+        // Tampilkan SweetAlert untuk pesan sukses/error dari session
+        <?php if(isset($_SESSION['sukses'])): ?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '<?php echo $_SESSION['sukses']; ?>',
+                showConfirmButton: true,
+                timer: 2000,
+                timerProgressBar: true
+            });
+            <?php unset($_SESSION['sukses']); ?>
+        <?php endif; ?>
+
+        <?php if(isset($_SESSION['error'])): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Gagal!',
+                text: '<?php echo $_SESSION['error']; ?>',
+                showConfirmButton: true
+            });
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+
+        // Ganti bagian script SweetAlert dengan kode berikut
+<?php if(isset($_SESSION['sukses'])): ?>
+    Swal.fire({
+        icon: 'success',
+        title: '<?php echo $_SESSION['sukses']; ?>',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        },
+        background: '#fff',
+        iconColor: '#4ade80',
+        customClass: {
+            popup: 'colored-toast'
+        }
+    });
+    <?php unset($_SESSION['sukses']); ?>
+<?php endif; ?>
+
+<?php if(isset($_SESSION['error'])): ?>
+    Swal.fire({
+        icon: 'error',
+        title: '<?php echo $_SESSION['error']; ?>',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        },
+        background: '#fff',
+        iconColor: '#ef4444',
+        customClass: {
+            popup: 'colored-toast'
+        }
+    });
+    <?php unset($_SESSION['error']); ?>
+<?php endif; ?>
     </script>
 </body>
 </html>
